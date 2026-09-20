@@ -75,7 +75,7 @@ export default function LandingPage() {
               className="flex items-center gap-2.5 px-7 py-4.5 rounded-2xl bg-gray-900/80 hover:bg-gray-800 border border-gray-700/80 text-gray-200 hover:text-white font-bold text-base transition-all duration-200 backdrop-blur-md"
             >
               <Wand2 className="w-5 h-5 text-pink-400" />
-              <span>Lightroom Mobile Editor</span>
+              <span>Pro Color Editor</span>
             </Link>
           </div>
 
@@ -196,7 +196,7 @@ export default function LandingPage() {
               </div>
             </Link>
 
-            {/* Card 6: Lightroom Mobile Editor */}
+            {/* Card 6: Color Editor */}
             <Link
               href="/editor"
               className="group p-5 rounded-2xl border border-purple-500/20 bg-gray-900/40 hover:bg-purple-950/20 hover:border-purple-500/40 transition-all duration-200 backdrop-blur-md flex flex-col justify-between"
@@ -206,15 +206,15 @@ export default function LandingPage() {
                   <Wand2 className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] uppercase font-mono tracking-wider text-purple-400 font-bold">
-                  Lightroom Mobile
+                  Pro Color Grading
                 </span>
               </div>
               <div>
                 <h3 className="text-base font-bold text-white mb-1 group-hover:text-purple-300">
-                  📸 Color Grade
+                  📸 Color Grade & HSL
                 </h3>
                 <p className="text-xs text-gray-400">
-                  8-channel target HSL color channel tuning, tone curves, texture, dehaze & one-tap presets.
+                  8-channel target HSL color channel tuning, tone curves, texture, dehaze & selective masking.
                 </p>
               </div>
             </Link>

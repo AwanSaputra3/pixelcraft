@@ -17,7 +17,7 @@ export const PresetsPanel: React.FC<PresetsPanelProps> = ({
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-          <Sparkles className="w-4 h-4 text-purple-400" /> Cinematic Lightroom Mobile Presets
+          <Sparkles className="w-4 h-4 text-purple-400" /> Cinematic Color Presets
         </h4>
         <span className="text-[10px] text-gray-400">One-Tap Color Grading</span>
       </div>

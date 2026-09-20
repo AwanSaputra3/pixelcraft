@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: "PixelCraft Studio",
     description: "All-in-One Client-Side Web Image Toolkit & Photo Editor. Enhance photo clarity, compress images, denoise ISO grain, convert to 8-bit retro art, and remove backgrounds with 100% privacy.",
   },
-  keywords: ["image toolkit", "photo editor", "remove background", "image compression", "denoise photo", "pixel art generator", "canvas filter", "client-side privacy", "lightroom mobile"],
+  keywords: ["image toolkit", "photo editor", "remove background", "image compression", "denoise photo", "pixel art generator", "canvas filter", "client-side privacy", "pro color editor", "color grading"],
   authors: [{ name: "PixelCraft Studio Team" }],
 };
 

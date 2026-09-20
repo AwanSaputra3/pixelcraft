@@ -94,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
                   : "text-gray-400 hover:text-gray-200 hover:bg-gray-900"
               }`}
             >
-              <Wand2 className="w-3.5 h-3.5 text-pink-400" /> Lightroom Editor
+              <Wand2 className="w-3.5 h-3.5 text-pink-400" /> Pro Color Editor
             </Link>
           </nav>
         </div>

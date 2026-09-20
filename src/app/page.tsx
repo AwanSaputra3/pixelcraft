@@ -21,9 +21,9 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col bg-[#090d16] text-gray-100 selection:bg-purple-500 selection:text-white">
       {/* Navigation Header */}
       <Header
-        onSelectSample={() => {}}
-        onReset={() => {}}
-        onExport={() => {}}
+        onSelectSample={() => { }}
+        onReset={() => { }}
+        onExport={() => { }}
         hasImage={false}
       />
 
@@ -57,7 +57,7 @@ export default function LandingPage() {
             <strong className="text-cyan-300 font-semibold">denoise ISO grain</strong>,{" "}
             <strong className="text-amber-300 font-semibold">convert photos into 8-bit retro art</strong>,{" "}
             <strong className="text-emerald-300 font-semibold">remove backgrounds automatically with client-side AI</strong>, and{" "}
-            <strong className="text-purple-300 font-semibold">color-grade like Lightroom Mobile</strong> — enjoy as you please!
+            <strong className="text-purple-300 font-semibold">color-grading</strong> — enjoy as you please!
           </p>
 
           {/* Action Button: Dive In */}
@@ -211,7 +211,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="text-base font-bold text-white mb-1 group-hover:text-purple-300">
-                  📸 Lightroom Editor
+                  📸 Color Grade
                 </h3>
                 <p className="text-xs text-gray-400">
                   8-channel target HSL color channel tuning, tone curves, texture, dehaze & one-tap presets.

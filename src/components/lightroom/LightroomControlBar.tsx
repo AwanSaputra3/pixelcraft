@@ -12,12 +12,14 @@ import {
   FlipHorizontal,
   FlipVertical,
   Wand2,
+  Layers,
 } from "lucide-react";
 import { LightroomOptions, HslColorName, HslChannel, LIGHTROOM_PRESETS, LightroomPreset } from "../../lib/lightroomEngine";
 import { HslMixer } from "./HslMixer";
 import { PresetsPanel } from "./PresetsPanel";
+import { MaskingPanel } from "./MaskingPanel";
 
-export type LightroomTab = "presets" | "light" | "color" | "effects" | "detail" | "crop";
+export type LightroomTab = "presets" | "light" | "color" | "effects" | "detail" | "masking" | "crop";
 
 interface LightroomControlBarProps {
   activeTab: LightroomTab;
@@ -44,6 +46,7 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
     { id: "color", label: "Color", icon: Palette },
     { id: "effects", label: "Effects", icon: Sparkles },
     { id: "detail", label: "Detail", icon: Sliders },
+    { id: "masking", label: "Masking", icon: Layers },
     { id: "crop", label: "Crop & Rotate", icon: Crop },
   ] as const;
 
@@ -230,7 +233,6 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
             </button>
           </div>
 
-          {/* Global White Balance */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <div className="flex justify-between text-xs text-gray-300">
@@ -293,7 +295,6 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
             </div>
           </div>
 
-          {/* HSL Mixer Component */}
           <HslMixer
             hslOptions={options.hsl}
             onChangeHslChannel={handleChangeHslChannel}
@@ -439,7 +440,12 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
         </div>
       )}
 
-      {/* Panel 6: CROP & ROTATE */}
+      {/* Panel 6: MASKING */}
+      {activeTab === "masking" && (
+        <MaskingPanel options={options} setOptions={setOptions} />
+      )}
+
+      {/* Panel 7: CROP & ROTATE */}
       {activeTab === "crop" && (
         <div className="flex flex-col gap-4 animate-fade-in">
           <div className="flex items-center justify-between">
@@ -451,7 +457,6 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
             </button>
           </div>
 
-          {/* Aspect Ratio Buttons */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-300">Aspect Ratio Preset</label>
             <div className="grid grid-cols-5 gap-1.5">
@@ -477,7 +482,6 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
             </div>
           </div>
 
-          {/* Flip & Rotate Buttons */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button
               onClick={() => handleChangeField("flipH", !options.flipH)}
@@ -520,7 +524,6 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
             </button>
           </div>
 
-          {/* Straighten Angle Slider */}
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs text-gray-300">
               <span>Straighten Angle</span>

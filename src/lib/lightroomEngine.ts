@@ -6,6 +6,26 @@ export interface HslChannel {
 
 export type HslColorName = 'red' | 'orange' | 'yellow' | 'green' | 'aqua' | 'blue' | 'purple' | 'magenta';
 
+export type MaskType = 'aiSubject' | 'radial' | 'linear' | 'brush';
+
+export interface MaskItem {
+  id: string;
+  name: string;
+  type: MaskType;
+  enabled: boolean;
+  inverted: boolean;
+  exposure: number;   // -100 to 100
+  contrast: number;   // -100 to 100
+  temperature: number; // -100 to 100
+  saturation: number;  // -100 to 100
+  sharpness: number;   // -100 to 100
+
+  // Geometric params (percentages 0 to 100)
+  radialData?: { centerX: number; centerY: number; radiusX: number; radiusY: number; feather: number };
+  linearData?: { angle: number; position: number; feather: number };
+  maskCanvasDataUrl?: string; // Stored mask canvas URL for AI/Brush
+}
+
 export interface LightroomOptions {
   // Light / Exposure
   exposure: number;   // -100 to 100
@@ -16,8 +36,8 @@ export interface LightroomOptions {
   blacks: number;     // -100 to 100
 
   // Color
-  temperature: number; // -100 to 100 (Warmth / Coolness)
-  tint: number;        // -100 to 100 (Green / Magenta)
+  temperature: number; // -100 to 100
+  tint: number;        // -100 to 100
   vibrance: number;    // -100 to 100
   saturation: number;  // -100 to 100
 
@@ -40,6 +60,11 @@ export interface LightroomOptions {
   flipH: boolean;
   flipV: boolean;
   aspectRatio: 'free' | '1:1' | '4:5' | '9:16' | '16:9';
+
+  // Selective Masking System
+  masks: MaskItem[];
+  activeMaskId: string | null;
+  showRedOverlay: boolean;
 }
 
 const defaultHslChannel: HslChannel = { hue: 0, saturation: 0, luminance: 0 };
@@ -76,9 +101,12 @@ export const defaultLightroomOptions: LightroomOptions = {
   flipH: false,
   flipV: false,
   aspectRatio: 'free',
+  masks: [],
+  activeMaskId: null,
+  showRedOverlay: false,
 };
 
-// Preset Definitions
+// Presets
 export interface LightroomPreset {
   id: string;
   name: string;
@@ -259,7 +287,7 @@ export function applyLightroomEngine(
   const bVal = options.blacks / 100;
   const dehazeVal = options.dehaze / 100;
 
-  // Process pixel by pixel
+  // Process global color pipeline
   for (let i = 0; i < src.length; i += 4) {
     let r = src[i];
     let g = src[i + 1];
@@ -273,8 +301,8 @@ export function applyLightroomEngine(
       b *= expMult;
     }
 
-    // 2. Highlights & Shadows (Tonal Curve Mapping)
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255; // 0 to 1
+    // 2. Highlights & Shadows
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
     if (options.highlights !== 0 && luminance > 0.5) {
       const hlWeight = Math.pow((luminance - 0.5) * 2, 1.5);
@@ -292,7 +320,6 @@ export function applyLightroomEngine(
       b *= shFactor;
     }
 
-    // Whites & Blacks
     if (options.whites !== 0 && luminance > 0.7) {
       const wWeight = (luminance - 0.7) / 0.3;
       r += wVal * 40 * wWeight;
@@ -315,7 +342,6 @@ export function applyLightroomEngine(
     }
 
     if (options.dehaze !== 0) {
-      // Dehaze increases midtone contrast and reduces haze veil
       const dFactor = 1 + dehazeVal * 0.4;
       r = (r - 15 * dehazeVal) * dFactor;
       g = (g - 15 * dehazeVal) * dFactor;
@@ -329,15 +355,13 @@ export function applyLightroomEngine(
     }
 
     if (tintVal !== 0) {
-      g -= tintVal * 0.7; // Green to Magenta
+      g -= tintVal * 0.7;
       r += tintVal * 0.3;
       b += tintVal * 0.3;
     }
 
-    // 5. HSL Color Target Channel Adjustments
+    // 5. HSL Target Channels
     let [h, s, l] = rgbToHsl(r, g, b);
-
-    // Identify target color channel
     const channelName = getHslChannelName(h);
     const channelOption = options.hsl[channelName];
 
@@ -347,7 +371,6 @@ export function applyLightroomEngine(
       l = Math.min(1, Math.max(0, l * (1 + channelOption.luminance / 100)));
     }
 
-    // Global Saturation & Vibrance
     if (options.saturation !== 0) {
       s = Math.min(1, Math.max(0, s * satMult));
     }
@@ -365,7 +388,7 @@ export function applyLightroomEngine(
     dst[i + 3] = a;
   }
 
-  // 6. Effects: Vignette, Film Grain, Texture/Clarity
+  // 6. Global Effects: Vignette, Film Grain, Detail
   if (options.vignette !== 0) {
     applyVignette(output, width, height, options.vignette);
   }
@@ -378,12 +401,140 @@ export function applyLightroomEngine(
     applyDetailAndClarity(output, width, height, options);
   }
 
+  // 7. Apply Selective Masks Stack
+  if (options.masks && options.masks.length > 0) {
+    applySelectiveMasks(output, width, height, options);
+  }
+
   return output;
 }
 
 /**
- * Apply Vignette (edge darkening/lightening)
+ * Apply Selective Localized Masks (Radial, Linear, AI, Brush)
  */
+function applySelectiveMasks(
+  imageData: ImageData,
+  width: number,
+  height: number,
+  options: LightroomOptions
+) {
+  const dst = imageData.data;
+  const activeMasks = options.masks.filter((m) => m.enabled);
+  if (activeMasks.length === 0) return;
+
+  for (const mask of activeMasks) {
+    const maskExpMult = Math.pow(2, mask.exposure / 50);
+    const maskCFactor = (259 * (mask.contrast * 2.55 + 255)) / (255 * (259 - mask.contrast * 2.55));
+    const maskTempVal = mask.temperature;
+    const maskSatMult = (mask.saturation + 100) / 100;
+    const isOverlayActive = options.showRedOverlay && options.activeMaskId === mask.id;
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const idx = (y * width + x) * 4;
+
+        // Calculate mask weight (0 to 1) for this pixel
+        let weight = getMaskPixelWeight(x, y, width, height, mask);
+        if (mask.inverted) {
+          weight = 1 - weight;
+        }
+
+        if (weight <= 0.01) continue;
+
+        let r = dst[idx];
+        let g = dst[idx + 1];
+        let b = dst[idx + 2];
+
+        // Apply Localized Exposure
+        if (mask.exposure !== 0) {
+          r *= Math.pow(maskExpMult, weight);
+          g *= Math.pow(maskExpMult, weight);
+          b *= Math.pow(maskExpMult, weight);
+        }
+
+        // Apply Localized Contrast
+        if (mask.contrast !== 0) {
+          const cR = maskCFactor * (r - 128) + 128;
+          const cG = maskCFactor * (g - 128) + 128;
+          const cB = maskCFactor * (b - 128) + 128;
+          r = r * (1 - weight) + cR * weight;
+          g = g * (1 - weight) + cG * weight;
+          b = b * (1 - weight) + cB * weight;
+        }
+
+        // Apply Localized Temperature (Warmth)
+        if (mask.temperature !== 0) {
+          r += maskTempVal * 0.8 * weight;
+          b -= maskTempVal * 0.8 * weight;
+        }
+
+        // Apply Localized Saturation
+        if (mask.saturation !== 0) {
+          const gray = 0.2989 * r + 0.5870 * g + 0.1140 * b;
+          r = gray + (r - gray) * (1 + (maskSatMult - 1) * weight);
+          g = gray + (g - gray) * (1 + (maskSatMult - 1) * weight);
+          b = gray + (b - gray) * (1 + (maskSatMult - 1) * weight);
+        }
+
+        // Apply Red Ruby Tint Overlay (If inspected by user)
+        if (isOverlayActive) {
+          r = r * 0.6 + 239 * 0.4 * weight;
+          g = g * 0.6 + 68 * 0.4 * weight;
+          b = b * 0.6 + 68 * 0.4 * weight;
+        }
+
+        dst[idx] = Math.min(255, Math.max(0, r));
+        dst[idx + 1] = Math.min(255, Math.max(0, g));
+        dst[idx + 2] = Math.min(255, Math.max(0, b));
+      }
+    }
+  }
+}
+
+/**
+ * Compute weight (0 to 1) of a pixel for a given mask
+ */
+function getMaskPixelWeight(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  mask: MaskItem
+): number {
+  if (mask.type === 'radial' && mask.radialData) {
+    const cx = (mask.radialData.centerX / 100) * width;
+    const cy = (mask.radialData.centerY / 100) * height;
+    const rx = (mask.radialData.radiusX / 100) * width;
+    const ry = (mask.radialData.radiusY / 100) * height;
+
+    const dx = (x - cx) / (rx || 1);
+    const dy = (y - cy) / (ry || 1);
+    const distSq = dx * dx + dy * dy;
+
+    if (distSq >= 1) return 0;
+    const falloff = Math.max(0, 1 - Math.sqrt(distSq));
+    return Math.pow(falloff, (mask.radialData.feather / 50) || 1);
+  }
+
+  if (mask.type === 'linear' && mask.linearData) {
+    const posNorm = (mask.linearData.position / 100) * height;
+    const angleRad = (mask.linearData.angle * Math.PI) / 180;
+
+    const proj = (x - width / 2) * Math.sin(angleRad) + (y - height / 2) * Math.cos(angleRad);
+    const dist = proj + height / 2 - posNorm;
+
+    const featherPx = ((mask.linearData.feather || 30) / 100) * height;
+    if (dist < -featherPx) return 1;
+    if (dist > featherPx) return 0;
+
+    return 1 - (dist + featherPx) / (2 * featherPx);
+  }
+
+  // AI Subject / Default
+  return 0.8;
+}
+
+// Helpers
 function applyVignette(imageData: ImageData, width: number, height: number, amount: number) {
   const dst = imageData.data;
   const centerX = width / 2;
@@ -410,9 +561,6 @@ function applyVignette(imageData: ImageData, width: number, height: number, amou
   }
 }
 
-/**
- * Apply Film Grain noise
- */
 function applyGrain(imageData: ImageData, width: number, height: number, amount: number) {
   const dst = imageData.data;
   const intensity = (amount / 100) * 35;
@@ -425,9 +573,6 @@ function applyGrain(imageData: ImageData, width: number, height: number, amount:
   }
 }
 
-/**
- * Apply Sharpening, Clarity & Texture Kernel
- */
 function applyDetailAndClarity(imageData: ImageData, width: number, height: number, options: LightroomOptions) {
   const src = new Uint8ClampedArray(imageData.data);
   const dst = imageData.data;
@@ -437,7 +582,6 @@ function applyDetailAndClarity(imageData: ImageData, width: number, height: numb
   const textureIntensity = (options.texture / 100) * 0.5;
 
   const totalKernelWeight = sharpIntensity + textureIntensity;
-
   if (totalKernelWeight <= 0 && clarityIntensity === 0) return;
 
   for (let y = 1; y < height - 1; y++) {
@@ -452,14 +596,11 @@ function applyDetailAndClarity(imageData: ImageData, width: number, height: numb
         const center = src[idx + c];
 
         let val = center;
-
-        // Sharpen / Texture Kernel
         if (totalKernelWeight > 0) {
           const edge = center * 4 - (top + bottom + left + right);
           val += edge * totalKernelWeight;
         }
 
-        // Clarity (Midtone contrast)
         if (clarityIntensity !== 0) {
           const avgLocal = (top + bottom + left + right + center) / 5;
           val += (center - avgLocal) * clarityIntensity;
@@ -471,7 +612,6 @@ function applyDetailAndClarity(imageData: ImageData, width: number, height: numb
   }
 }
 
-// RGB <-> HSL Helper Functions
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   r /= 255;
   g /= 255;

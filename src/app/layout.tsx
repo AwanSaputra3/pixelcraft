@@ -13,7 +13,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "PixelCraft Studio - All-in-One Client-Side Web Image Toolkit",
+  title: "PixelCraft Studio",
   description: "Next.js photo editing app: Enhance photo clarity, compress images, denoise ISO grain, convert to pixel art, and remove backgrounds 100% client-side with privacy.",
   keywords: ["image toolkit", "photo editor", "remove background", "image compression", "denoise photo", "pixel art generator", "canvas filter", "client-side privacy"],
   authors: [{ name: "PixelCraft Studio Team" }],

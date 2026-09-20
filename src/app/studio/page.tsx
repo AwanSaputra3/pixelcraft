@@ -83,6 +83,14 @@ export default function StudioDashboardPage() {
   // Canvas Refs
   const workingCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  // Auto load initial demo sample portrait on first load if no file present
+  useEffect(() => {
+    handleSelectSample(
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80",
+      "Portrait"
+    );
+  }, []);
+
   // Initialize Base Image when selected
   const loadImageFile = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
@@ -307,7 +315,7 @@ export default function StudioDashboardPage() {
         setActiveTab={setActiveTab}
       />
 
-      {/* Main Studio Workspace Grid */}
+      {/* Main Studio Workspace Grid (Matching User Screenshot Layout) */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex flex-col gap-6">
         {/* Top Upload Dropzone / Image Spec Bar */}
         <Dropzone
@@ -322,7 +330,7 @@ export default function StudioDashboardPage() {
 
         {/* Studio Interactive Viewport & Control Sidebar */}
         {originalUrl && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-fade-in">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left 7 Columns: Interactive Image Before/After Visualizer */}
             <div className="lg:col-span-7 flex flex-col gap-4">
               <ImageCompare

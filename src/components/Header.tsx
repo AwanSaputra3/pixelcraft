@@ -3,22 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Sparkles,
-  ShieldCheck,
-  Image as ImageIcon,
-  RotateCcw,
-  Download,
-  Sliders,
-  Wand2,
-  Home,
-} from "lucide-react";
+import { Sparkles, ShieldCheck, Image as ImageIcon, RotateCcw, Download, Sliders, Home, Wand2 } from "lucide-react";
 
 interface HeaderProps {
-  onSelectSample?: (sampleUrl: string, sampleName: string) => void;
-  onReset?: () => void;
-  onExport?: () => void;
-  hasImage?: boolean;
+  onSelectSample: (sampleUrl: string, sampleName: string) => void;
+  onReset: () => void;
+  onExport: () => void;
+  hasImage: boolean;
   activeTab?: string;
   setActiveTab?: (tab: any) => void;
 }
@@ -45,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectSample,
   onReset,
   onExport,
-  hasImage = false,
+  hasImage,
 }) => {
   const pathname = usePathname();
 
@@ -73,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </Link>
 
-          {/* Page Navigation Switcher (Home, Studio, Lightroom Editor) */}
+          {/* Mode Navigation Switcher (Home / Studio / Lightroom) */}
           <nav className="hidden md:flex items-center gap-1 bg-gray-950 p-1 rounded-xl border border-gray-800/80 text-xs">
             <Link
               href="/"
@@ -89,11 +80,11 @@ export const Header: React.FC<HeaderProps> = ({
               href="/studio"
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
                 pathname === "/studio"
-                  ? "bg-purple-600 text-white shadow-md shadow-purple-500/20"
+                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md shadow-purple-500/20"
                   : "text-gray-400 hover:text-gray-200 hover:bg-gray-900"
               }`}
             >
-              <Sliders className="w-3.5 h-3.5" /> Studio Dashboard
+              <Sliders className="w-3.5 h-3.5" /> Toolkit Studio
             </Link>
             <Link
               href="/editor"
@@ -108,8 +99,8 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
         </div>
 
-        {/* Quick Sample Selector */}
-        {onSelectSample && (
+        {/* Quick Sample Selector (Visible on Studio & Editor pages) */}
+        {pathname !== "/" && (
           <div className="hidden lg:flex items-center gap-2">
             <span className="text-xs text-gray-400 flex items-center gap-1">
               <ImageIcon className="w-3.5 h-3.5" /> Sample:
@@ -131,21 +122,15 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
-          {/* Mobile navigation links */}
+          {/* Mobile Navigation Button */}
           <Link
-            href="/studio"
+            href={pathname === "/" ? "/studio" : "/"}
             className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-purple-900/40 text-purple-300 border border-purple-500/30 text-xs font-medium"
           >
-            Studio
-          </Link>
-          <Link
-            href="/editor"
-            className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-pink-900/40 text-pink-300 border border-pink-500/30 text-xs font-medium"
-          >
-            Lightroom
+            {pathname === "/" ? "Toolkit Studio" : "Home"}
           </Link>
 
-          {hasImage && onReset && (
+          {hasImage && pathname !== "/" && (
             <button
               onClick={onReset}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white bg-gray-800/80 hover:bg-gray-700/80 rounded-lg border border-gray-700/60 transition-colors"
@@ -156,7 +141,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {onExport && (
+          {pathname !== "/" && (
             <button
               onClick={onExport}
               disabled={!hasImage}

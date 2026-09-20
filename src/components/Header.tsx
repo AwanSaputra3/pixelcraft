@@ -3,13 +3,22 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, ShieldCheck, Image as ImageIcon, RotateCcw, Download, Sliders, SlidersHorizontal, Layers, Wand2 } from "lucide-react";
+import {
+  Sparkles,
+  ShieldCheck,
+  Image as ImageIcon,
+  RotateCcw,
+  Download,
+  Sliders,
+  Wand2,
+  Home,
+} from "lucide-react";
 
 interface HeaderProps {
-  onSelectSample: (sampleUrl: string, sampleName: string) => void;
-  onReset: () => void;
-  onExport: () => void;
-  hasImage: boolean;
+  onSelectSample?: (sampleUrl: string, sampleName: string) => void;
+  onReset?: () => void;
+  onExport?: () => void;
+  hasImage?: boolean;
   activeTab?: string;
   setActiveTab?: (tab: any) => void;
 }
@@ -36,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectSample,
   onReset,
   onExport,
-  hasImage,
+  hasImage = false,
 }) => {
   const pathname = usePathname();
 
@@ -64,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </Link>
 
-          {/* Mode Navigation Switcher (Studio vs Lightroom) */}
+          {/* Page Navigation Switcher (Home, Studio, Lightroom Editor) */}
           <nav className="hidden md:flex items-center gap-1 bg-gray-950 p-1 rounded-xl border border-gray-800/80 text-xs">
             <Link
               href="/"
@@ -74,7 +83,17 @@ export const Header: React.FC<HeaderProps> = ({
                   : "text-gray-400 hover:text-gray-200 hover:bg-gray-900"
               }`}
             >
-              <Sliders className="w-3.5 h-3.5" /> Toolkit Studio
+              <Home className="w-3.5 h-3.5" /> Home
+            </Link>
+            <Link
+              href="/studio"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                pathname === "/studio"
+                  ? "bg-purple-600 text-white shadow-md shadow-purple-500/20"
+                  : "text-gray-400 hover:text-gray-200 hover:bg-gray-900"
+              }`}
+            >
+              <Sliders className="w-3.5 h-3.5" /> Studio Dashboard
             </Link>
             <Link
               href="/editor"
@@ -84,41 +103,49 @@ export const Header: React.FC<HeaderProps> = ({
                   : "text-gray-400 hover:text-gray-200 hover:bg-gray-900"
               }`}
             >
-              <Wand2 className="w-3.5 h-3.5 text-pink-400" /> Lightroom Mobile Editor
+              <Wand2 className="w-3.5 h-3.5 text-pink-400" /> Lightroom Editor
             </Link>
           </nav>
         </div>
 
         {/* Quick Sample Selector */}
-        <div className="hidden lg:flex items-center gap-2">
-          <span className="text-xs text-gray-400 flex items-center gap-1">
-            <ImageIcon className="w-3.5 h-3.5" /> Sample:
-          </span>
-          <div className="flex items-center gap-1.5">
-            {SAMPLE_IMAGES.map((sample) => (
-              <button
-                key={sample.name}
-                onClick={() => onSelectSample(sample.url, sample.name)}
-                className="px-2.5 py-1 text-xs rounded-lg bg-gray-800/80 hover:bg-purple-600/30 hover:border-purple-500/40 border border-gray-700/60 text-gray-300 hover:text-white transition-all duration-150"
-                title={sample.desc}
-              >
-                {sample.name}
-              </button>
-            ))}
+        {onSelectSample && (
+          <div className="hidden lg:flex items-center gap-2">
+            <span className="text-xs text-gray-400 flex items-center gap-1">
+              <ImageIcon className="w-3.5 h-3.5" /> Sample:
+            </span>
+            <div className="flex items-center gap-1.5">
+              {SAMPLE_IMAGES.map((sample) => (
+                <button
+                  key={sample.name}
+                  onClick={() => onSelectSample(sample.url, sample.name)}
+                  className="px-2.5 py-1 text-xs rounded-lg bg-gray-800/80 hover:bg-purple-600/30 hover:border-purple-500/40 border border-gray-700/60 text-gray-300 hover:text-white transition-all duration-150"
+                  title={sample.desc}
+                >
+                  {sample.name}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
-          {/* Mobile navigation link indicator */}
+          {/* Mobile navigation links */}
           <Link
-            href={pathname === "/editor" ? "/" : "/editor"}
+            href="/studio"
             className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-purple-900/40 text-purple-300 border border-purple-500/30 text-xs font-medium"
           >
-            {pathname === "/editor" ? "Toolkit Studio" : "Lightroom"}
+            Studio
+          </Link>
+          <Link
+            href="/editor"
+            className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-pink-900/40 text-pink-300 border border-pink-500/30 text-xs font-medium"
+          >
+            Lightroom
           </Link>
 
-          {hasImage && (
+          {hasImage && onReset && (
             <button
               onClick={onReset}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white bg-gray-800/80 hover:bg-gray-700/80 rounded-lg border border-gray-700/60 transition-colors"
@@ -129,18 +156,20 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          <button
-            onClick={onExport}
-            disabled={!hasImage}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold shadow-lg transition-all duration-200 ${
-              hasImage
-                ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02] active:scale-[0.98]"
-                : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700/40"
-            }`}
-          >
-            <Download className="w-4 h-4" />
-            Export Photo
-          </button>
+          {onExport && (
+            <button
+              onClick={onExport}
+              disabled={!hasImage}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold shadow-lg transition-all duration-200 ${
+                hasImage
+                  ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02] active:scale-[0.98]"
+                  : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700/40"
+              }`}
+            >
+              <Download className="w-4 h-4" />
+              Export Photo
+            </button>
+          )}
         </div>
       </div>
     </header>

@@ -1,12 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React from "react";
 import Link from "next/link";
-import { Header } from "../components/Header";
-import { Dropzone } from "../components/Dropzone";
-import { ImageCompare } from "../components/ImageCompare";
-import { ControlBar, ToolTab } from "../components/ControlBar";
-import { ExportModal } from "../components/ExportModal";
 import {
   Sparkles,
   ArrowRight,
@@ -17,344 +12,47 @@ import {
   Wand2,
   ShieldCheck,
   Zap,
+  CheckCircle2,
+  Cpu,
+  Lock,
 } from "lucide-react";
+import { Header } from "../components/Header";
 
-import {
-  EnhanceOptions,
-  defaultEnhanceOptions,
-  applyEnhance,
-  computeHistogram,
-  HistogramData,
-} from "../lib/enhance";
-import {
-  CompressOptions,
-  CompressResult,
-  compressImage,
-} from "../lib/compress";
-import {
-  DenoiseOptions,
-  defaultDenoiseOptions,
-  applyDenoise,
-} from "../lib/denoise";
-import {
-  PixelateOptions,
-  defaultPixelateOptions,
-  applyPixelate,
-} from "../lib/pixelate";
-import {
-  RemoveBgOptions,
-  defaultRemoveBgOptions,
-  processRemoveBackground,
-} from "../lib/removeBg";
-
-interface QueueItem {
-  id: string;
-  name: string;
-  file: File;
-  thumbnail: string;
-}
-
-export default function StudioPage() {
-  // Image State
-  const [originalFile, setOriginalFile] = useState<File | null>(null);
-  const [originalUrl, setOriginalUrl] = useState<string>("");
-  const [processedUrl, setProcessedUrl] = useState<string>("");
-  const [imageInfo, setImageInfo] = useState<{
-    name: string;
-    size: number;
-    width: number;
-    height: number;
-    type: string;
-  } | null>(null);
-
-  // File Queue
-  const [fileQueue, setFileQueue] = useState<QueueItem[]>([]);
-  const [activeFileId, setActiveFileId] = useState<string | null>(null);
-
-  // Studio Tool Tabs
-  const [activeTab, setActiveTab] = useState<ToolTab>("enhance");
-
-  // Options State for Each Tool
-  const [enhanceOptions, setEnhanceOptions] = useState<EnhanceOptions>(defaultEnhanceOptions);
-  const [compressOptions, setCompressOptions] = useState<CompressOptions>({
-    quality: 0.8,
-    format: "image/webp",
-    maxWidthOrHeight: 4096,
-  });
-  const [compressResult, setCompressResult] = useState<CompressResult | null>(null);
-  const [denoiseOptions, setDenoiseOptions] = useState<DenoiseOptions>(defaultDenoiseOptions);
-  const [pixelateOptions, setPixelateOptions] = useState<PixelateOptions>(defaultPixelateOptions);
-  const [removeBgOptions, setRemoveBgOptions] = useState<RemoveBgOptions>(defaultRemoveBgOptions);
-
-  // Processing & UI States
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [progressText, setProgressText] = useState<string>("Processing image...");
-  const [histogram, setHistogram] = useState<HistogramData | null>(null);
-  const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
-
-  // Canvas Refs
-  const workingCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const workspaceRef = useRef<HTMLDivElement | null>(null);
-
-  // Scroll to workspace on "Dive In" click
-  const handleDiveIn = () => {
-    if (workspaceRef.current) {
-      workspaceRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  // Initialize Base Image when selected
-  const loadImageFile = useCallback((file: File) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      setOriginalFile(file);
-      setOriginalUrl(url);
-      setProcessedUrl(url);
-      setImageInfo({
-        name: file.name,
-        size: file.size,
-        width: img.width,
-        height: img.height,
-        type: file.type || "image/png",
-      });
-
-      // Add to Queue
-      const newId = Math.random().toString(36).substring(7);
-      setFileQueue((prev) => [
-        ...prev,
-        { id: newId, name: file.name, file, thumbnail: url },
-      ]);
-      setActiveFileId(newId);
-
-      // Reset filter parameters for new photo
-      setEnhanceOptions(defaultEnhanceOptions);
-      setDenoiseOptions(defaultDenoiseOptions);
-      setPixelateOptions(defaultPixelateOptions);
-      setCompressResult(null);
-
-      // Scroll to editor
-      setTimeout(() => {
-        workspaceRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    };
-    img.src = url;
-  }, []);
-
-  // Sample Image Selector Handler
-  const handleSelectSample = async (sampleUrl: string, sampleName: string) => {
-    setIsProcessing(true);
-    setProgressText(`Fetching ${sampleName} sample...`);
-    try {
-      const response = await fetch(sampleUrl);
-      const blob = await response.blob();
-      const file = new File([blob], `${sampleName.toLowerCase().replace(/\s+/g, "_")}.jpg`, {
-        type: blob.type || "image/jpeg",
-      });
-      loadImageFile(file);
-    } catch (err) {
-      console.error("Failed to fetch sample image:", err);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  // Queue File Switcher
-  const handleSelectQueueFile = (id: string) => {
-    const item = fileQueue.find((f) => f.id === id);
-    if (item) {
-      setActiveFileId(id);
-      loadImageFile(item.file);
-    }
-  };
-
-  const handleRemoveQueueFile = (id: string) => {
-    setFileQueue((prev) => prev.filter((item) => item.id !== id));
-    if (activeFileId === id) {
-      const remaining = fileQueue.filter((item) => item.id !== id);
-      if (remaining.length > 0) {
-        setActiveFileId(remaining[0].id);
-        loadImageFile(remaining[0].file);
-      } else {
-        setOriginalFile(null);
-        setOriginalUrl("");
-        setProcessedUrl("");
-        setImageInfo(null);
-      }
-    }
-  };
-
-  // Global Reset
-  const handleResetAll = () => {
-    setEnhanceOptions(defaultEnhanceOptions);
-    setDenoiseOptions(defaultDenoiseOptions);
-    setPixelateOptions(defaultPixelateOptions);
-    setRemoveBgOptions(defaultRemoveBgOptions);
-    setCompressResult(null);
-    if (originalUrl) {
-      setProcessedUrl(originalUrl);
-    }
-  };
-
-  const handleResetTab = (tab: ToolTab) => {
-    switch (tab) {
-      case "enhance":
-        setEnhanceOptions(defaultEnhanceOptions);
-        break;
-      case "denoise":
-        setDenoiseOptions(defaultDenoiseOptions);
-        break;
-      case "pixelate":
-        setPixelateOptions(defaultPixelateOptions);
-        break;
-      case "removeBg":
-        setRemoveBgOptions(defaultRemoveBgOptions);
-        break;
-      case "compress":
-        setCompressOptions({ quality: 0.8, format: "image/webp", maxWidthOrHeight: 4096 });
-        setCompressResult(null);
-        break;
-    }
-  };
-
-  // Real-time Canvas Processor for Enhance, Denoise, Pixelate
-  useEffect(() => {
-    if (!originalUrl || !imageInfo) return;
-
-    if (activeTab === "removeBg" || activeTab === "compress") {
-      return;
-    }
-
-    let isSubscribed = true;
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-
-    img.onload = () => {
-      if (!isSubscribed) return;
-
-      const canvas = workingCanvasRef.current || document.createElement("canvas");
-      workingCanvasRef.current = canvas;
-      canvas.width = img.width;
-      canvas.height = img.height;
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      ctx.drawImage(img, 0, 0);
-
-      let processedImageData: ImageData;
-
-      if (activeTab === "enhance") {
-        processedImageData = applyEnhance(ctx, img.width, img.height, enhanceOptions);
-      } else if (activeTab === "denoise") {
-        processedImageData = applyDenoise(ctx, img.width, img.height, denoiseOptions);
-      } else if (activeTab === "pixelate") {
-        processedImageData = applyPixelate(ctx, img.width, img.height, pixelateOptions);
-      } else {
-        processedImageData = ctx.getImageData(0, 0, img.width, img.height);
-      }
-
-      ctx.putImageData(processedImageData, 0, 0);
-
-      const hist = computeHistogram(processedImageData);
-      setHistogram(hist);
-
-      const dataUrl = canvas.toDataURL("image/png");
-      if (isSubscribed) {
-        setProcessedUrl(dataUrl);
-      }
-    };
-
-    img.src = originalUrl;
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [
-    originalUrl,
-    imageInfo,
-    activeTab,
-    enhanceOptions,
-    denoiseOptions,
-    pixelateOptions,
-  ]);
-
-  // Action Handler: Compression
-  const handleTriggerCompress = async () => {
-    if (!originalFile) return;
-    setIsProcessing(true);
-    setProgressText("Compressing photo client-side...");
-    try {
-      const result = await compressImage(originalFile, compressOptions);
-      setCompressResult(result);
-      setProcessedUrl(result.dataUrl);
-    } catch (err) {
-      console.error("Compression failed:", err);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  // Action Handler: Remove Background via WASM AI
-  const handleTriggerRemoveBg = async () => {
-    if (!originalFile && !originalUrl) return;
-    setIsProcessing(true);
-    setProgressText("Initializing WASM Neural Model...");
-
-    try {
-      const targetSource = originalFile || originalUrl;
-      const result = await processRemoveBackground(
-        targetSource,
-        removeBgOptions,
-        (progress, text) => {
-          setProgressText(text);
-        }
-      );
-
-      setProcessedUrl(result.dataUrl);
-    } catch (err) {
-      console.error("Remove background error:", err);
-      alert("Background removal failed. Please check network/browser capability.");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#090d16] text-gray-100 selection:bg-purple-500 selection:text-white pb-12">
-      {/* Navbar Header */}
+    <div className="min-h-screen flex flex-col bg-[#090d16] text-gray-100 selection:bg-purple-500 selection:text-white">
+      {/* Header */}
       <Header
-        onSelectSample={handleSelectSample}
-        onReset={handleResetAll}
-        onExport={() => setIsExportOpen(true)}
-        hasImage={!!originalUrl}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        onSelectSample={() => {}}
+        onReset={() => {}}
+        onExport={() => {}}
+        hasImage={false}
       />
 
       {/* Hero Landing Section */}
-      <section className="relative overflow-hidden pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-gray-800/40 bg-gradient-to-b from-purple-950/20 via-[#090d16] to-[#090d16]">
-        {/* Glow background circles */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute top-1/3 left-1/3 w-[350px] h-[350px] bg-pink-600/10 rounded-full blur-[100px] pointer-events-none" />
+      <section className="relative overflow-hidden pt-16 pb-24 px-4 sm:px-6 lg:px-8 border-b border-gray-800/40 bg-gradient-to-b from-purple-950/20 via-[#090d16] to-[#090d16]">
+        {/* Background glow effects */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-pink-600/10 rounded-full blur-[110px] pointer-events-none" />
+        <div className="absolute top-1/2 right-1/4 w-[350px] h-[350px] bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto text-center flex flex-col items-center gap-6 relative z-10">
-          {/* Pill Tag */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-900/40 border border-purple-500/30 text-purple-300 text-xs font-semibold shadow-lg shadow-purple-500/10">
-            <Sparkles className="w-4 h-4 text-pink-400" />
-            <span>High-Performance Client-Side Web Image Toolkit</span>
+        <div className="max-w-5xl mx-auto text-center flex flex-col items-center gap-8 relative z-10">
+          {/* Privacy Pill Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-900/40 border border-purple-500/30 text-purple-300 text-xs font-semibold shadow-lg shadow-purple-500/10 animate-fade-in">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>100% Client-Side Privacy & WebAssembly AI Engine</span>
           </div>
 
           {/* Main Welcome Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.12]">
             Welcome to{" "}
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
               PixelCraft Studio
             </span>
           </h1>
 
-          {/* Subtitle with Requested Text */}
-          <p className="max-w-3xl text-base sm:text-lg text-gray-300 font-normal leading-relaxed">
+          {/* User Requested Welcome Subtitle */}
+          <p className="max-w-3xl text-lg sm:text-xl text-gray-300 font-normal leading-relaxed">
             In here you can{" "}
             <strong className="text-purple-300 font-semibold">enhance photo clarity</strong>,{" "}
             <strong className="text-pink-300 font-semibold">compress file sizes</strong>,{" "}
@@ -364,136 +62,205 @@ export default function StudioPage() {
             <strong className="text-purple-300 font-semibold">color-grade like Lightroom Mobile</strong> — enjoy as you please!
           </p>
 
-          {/* Action Button: Dive In */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <button
-              onClick={handleDiveIn}
-              className="group flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-base shadow-xl shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
+          {/* Call to Action Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-5 pt-4">
+            <Link
+              href="/studio"
+              className="group flex items-center gap-3 px-9 py-4.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-lg shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.04] active:scale-[0.98] transition-all duration-200"
             >
               <span>Dive In</span>
-              <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
-            </button>
+              <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1.5 transition-transform" />
+            </Link>
 
             <Link
               href="/editor"
-              className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-gray-900/80 hover:bg-gray-800 border border-gray-700/80 text-gray-200 hover:text-white font-semibold text-base transition-all duration-200"
+              className="flex items-center gap-2.5 px-7 py-4.5 rounded-2xl bg-gray-900/90 hover:bg-gray-800 border border-gray-700/80 text-gray-200 hover:text-white font-semibold text-lg hover:border-purple-500/40 transition-all duration-200"
             >
               <Wand2 className="w-5 h-5 text-pink-400" />
-              <span>Open Lightroom Editor</span>
+              <span>Lightroom Mobile Editor</span>
             </Link>
           </div>
 
-          {/* Features Grid Showcase */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 w-full pt-8 text-left">
-            {[
-              {
-                title: "✨ Enhance",
-                desc: "Sharpening & Contrast",
-                color: "border-purple-500/30 bg-purple-950/20",
-              },
-              {
-                title: "🗜️ Compress",
-                desc: "JPG, PNG & WebP",
-                color: "border-pink-500/30 bg-pink-950/20",
-              },
-              {
-                title: "🧼 Denoise",
-                desc: "ISO Grain Removal",
-                color: "border-cyan-500/30 bg-cyan-950/20",
-              },
-              {
-                title: "👾 Pixel Art",
-                desc: "8-Bit Retro Palettes",
-                color: "border-amber-500/30 bg-amber-950/20",
-              },
-              {
-                title: "✂️ Remove BG",
-                desc: "WASM AI Neural Net",
-                color: "border-emerald-500/30 bg-emerald-950/20",
-              },
-              {
-                title: "📸 Lightroom",
-                desc: "8-Channel HSL Mixer",
-                color: "border-purple-500/30 bg-purple-950/20",
-              },
-            ].map((f, i) => (
-              <div
-                key={i}
-                className={`p-3 rounded-xl border ${f.color} backdrop-blur-sm flex flex-col gap-1 hover:scale-105 transition-transform`}
-              >
-                <div className="font-bold text-xs text-white">{f.title}</div>
-                <div className="text-[10px] text-gray-400">{f.desc}</div>
-              </div>
-            ))}
+          {/* Quick Metrics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full max-w-3xl pt-10 border-t border-gray-800/60 mt-4">
+            <div className="flex flex-col items-center">
+              <span className="text-2xl font-bold text-white">100%</span>
+              <span className="text-xs text-gray-400">Client-Side Privacy</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-2xl font-bold text-white">0 KB</span>
+              <span className="text-xs text-gray-400">Server Uploads</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-2xl font-bold text-white">8-Channel</span>
+              <span className="text-xs text-gray-400">HSL Color Mixer</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-2xl font-bold text-white">WASM AI</span>
+              <span className="text-xs text-gray-400">In-Browser Neural Net</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Main Studio Workspace Grid */}
-      <main
-        ref={workspaceRef}
-        className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col gap-6"
-      >
-        {/* Top Upload Dropzone / Image Spec Bar */}
-        <Dropzone
-          onFileSelect={loadImageFile}
-          onSampleSelect={handleSelectSample}
-          currentImageInfo={imageInfo}
-          fileQueue={fileQueue}
-          activeFileId={activeFileId}
-          onSelectQueueFile={handleSelectQueueFile}
-          onRemoveQueueFile={handleRemoveQueueFile}
-        />
+      {/* Feature Showcase Grid Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex flex-col gap-12">
+        <div className="text-center flex flex-col items-center gap-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+            All-in-One Toolkit Features
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+            Everything You Need for Image Editing
+          </h2>
+          <p className="text-gray-400 text-sm max-w-xl">
+            High-speed client-side canvas algorithms designed for creators, developers, and photographers.
+          </p>
+        </div>
 
-        {/* Studio Interactive Viewport & Control Sidebar */}
-        {originalUrl && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-fade-in">
-            {/* Left 7 Columns: Interactive Image Before/After Visualizer */}
-            <div className="lg:col-span-7 flex flex-col gap-4">
-              <ImageCompare
-                originalUrl={originalUrl}
-                processedUrl={processedUrl}
-                isProcessing={isProcessing}
-                processingProgressText={progressText}
-              />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Card 1: Enhance */}
+          <div className="glass-card p-6 rounded-2xl border border-gray-800 hover:border-purple-500/40 transition-all duration-300 flex flex-col justify-between gap-4 group">
+            <div className="flex flex-col gap-3">
+              <div className="w-12 h-12 rounded-xl bg-purple-600/20 text-purple-400 border border-purple-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Sliders className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">✨ Photo Enhancement</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Adaptive brightness, contrast, saturation, Laplacian 3x3 sharpening kernel, warmth, and real-time RGB histogram spectrum.
+              </p>
             </div>
-
-            {/* Right 5 Columns: Control Panel Tabs */}
-            <div className="lg:col-span-5 flex flex-col gap-4">
-              <ControlBar
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                enhanceOptions={enhanceOptions}
-                setEnhanceOptions={setEnhanceOptions}
-                compressOptions={compressOptions}
-                setCompressOptions={setCompressOptions}
-                compressResult={compressResult}
-                onTriggerCompress={handleTriggerCompress}
-                denoiseOptions={denoiseOptions}
-                setDenoiseOptions={setDenoiseOptions}
-                pixelateOptions={pixelateOptions}
-                setPixelateOptions={setPixelateOptions}
-                removeBgOptions={removeBgOptions}
-                setRemoveBgOptions={setRemoveBgOptions}
-                onTriggerRemoveBg={handleTriggerRemoveBg}
-                histogram={histogram}
-                onResetTab={handleResetTab}
-                isProcessing={isProcessing}
-              />
-            </div>
+            <Link
+              href="/studio"
+              className="text-xs font-semibold text-purple-400 hover:text-purple-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+            >
+              Try Enhance <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
-        )}
-      </main>
 
-      {/* Export & Download Modal */}
-      <ExportModal
-        isOpen={isExportOpen}
-        onClose={() => setIsExportOpen(false)}
-        imageDataUrl={processedUrl || originalUrl}
-        originalName={imageInfo?.name || "photo"}
-        width={imageInfo?.width || 1920}
-        height={imageInfo?.height || 1080}
-      />
+          {/* Card 2: Compress */}
+          <div className="glass-card p-6 rounded-2xl border border-gray-800 hover:border-pink-500/40 transition-all duration-300 flex flex-col justify-between gap-4 group">
+            <div className="flex flex-col gap-3">
+              <div className="w-12 h-12 rounded-xl bg-pink-600/20 text-pink-400 border border-pink-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Archive className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">🗜️ Image Compression</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Reduce PNG, JPG, and WebP file sizes instantly with interactive quality sliders and real-time savings percentage readouts.
+              </p>
+            </div>
+            <Link
+              href="/studio"
+              className="text-xs font-semibold text-pink-400 hover:text-pink-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+            >
+              Try Compress <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Card 3: Denoise */}
+          <div className="glass-card p-6 rounded-2xl border border-gray-800 hover:border-cyan-500/40 transition-all duration-300 flex flex-col justify-between gap-4 group">
+            <div className="flex flex-col gap-3">
+              <div className="w-12 h-12 rounded-xl bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Zap className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">🧼 Spatial Denoise Filter</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Smooth ISO grain and low-light noise using spatial Median Filters and Bilateral Gaussian edge-preserving smoothing.
+              </p>
+            </div>
+            <Link
+              href="/studio"
+              className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+            >
+              Try Denoise <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Card 4: Pixel Art */}
+          <div className="glass-card p-6 rounded-2xl border border-gray-800 hover:border-amber-500/40 transition-all duration-300 flex flex-col justify-between gap-4 group">
+            <div className="flex flex-col gap-3">
+              <div className="w-12 h-12 rounded-xl bg-amber-600/20 text-amber-400 border border-amber-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Gamepad2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">👾 8-Bit Pixel Art</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Transform any photo into retro pixel artwork with block sampling (2px-64px) and color quantization (GameBoy, NES 8-Bit, Cyberpunk).
+              </p>
+            </div>
+            <Link
+              href="/studio"
+              className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+            >
+              Try Pixel Art <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Card 5: Remove BG */}
+          <div className="glass-card p-6 rounded-2xl border border-gray-800 hover:border-emerald-500/40 transition-all duration-300 flex flex-col justify-between gap-4 group">
+            <div className="flex flex-col gap-3">
+              <div className="w-12 h-12 rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Scissors className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">✂️ AI Background Removal</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                In-browser WebAssembly neural network segmentation. Replace backgrounds with transparent PNGs, solid hex colors, or custom photos.
+              </p>
+            </div>
+            <Link
+              href="/studio"
+              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+            >
+              Try Remove BG <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Card 6: Lightroom Mobile Editor */}
+          <div className="glass-card p-6 rounded-2xl border border-gray-800 hover:border-purple-500/40 transition-all duration-300 flex flex-col justify-between gap-4 group">
+            <div className="flex flex-col gap-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-purple-500/20">
+                <Wand2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">📸 Lightroom Mobile Editor</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Dedicated editor with 8-Channel Target HSL Mixer, Tone Curves, Texture, Dehaze, Crop/Rotate, and one-tap cinematic presets.
+              </p>
+            </div>
+            <Link
+              href="/editor"
+              className="text-xs font-semibold text-purple-400 hover:text-purple-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+            >
+              Open Lightroom Editor <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="mt-auto border-t border-gray-800/80 py-8 bg-[#070a12]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-purple-400" />
+            <span className="font-semibold text-white">PixelCraft Studio</span> — All-in-One Client-Side Web Image Toolkit
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/studio" className="hover:text-white transition-colors">
+              Toolkit Studio
+            </Link>
+            <Link href="/editor" className="hover:text-white transition-colors">
+              Lightroom Editor
+            </Link>
+            <a
+              href="https://github.com/AwanSaputra3/pixelcraft"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg> GitHub
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

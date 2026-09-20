@@ -14,8 +14,19 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "PixelCraft Studio",
-  description: "Next.js photo editing app: Enhance photo clarity, compress images, denoise ISO grain, convert to pixel art, and remove backgrounds 100% client-side with privacy.",
-  keywords: ["image toolkit", "photo editor", "remove background", "image compression", "denoise photo", "pixel art generator", "canvas filter", "client-side privacy"],
+  description: "All-in-One Client-Side Web Image Toolkit & Lightroom Mobile Photo Editor. Enhance photo clarity, compress images, denoise ISO grain, convert to 8-bit retro art, and remove backgrounds with 100% privacy.",
+  openGraph: {
+    title: "PixelCraft Studio",
+    description: "All-in-One Client-Side Web Image Toolkit & Lightroom Mobile Photo Editor. Enhance photo clarity, compress images, denoise ISO grain, convert to 8-bit retro art, and remove backgrounds with 100% privacy.",
+    type: "website",
+    siteName: "PixelCraft Studio",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PixelCraft Studio",
+    description: "All-in-One Client-Side Web Image Toolkit & Lightroom Mobile Photo Editor. Enhance photo clarity, compress images, denoise ISO grain, convert to 8-bit retro art, and remove backgrounds with 100% privacy.",
+  },
+  keywords: ["image toolkit", "photo editor", "remove background", "image compression", "denoise photo", "pixel art generator", "canvas filter", "client-side privacy", "lightroom mobile"],
   authors: [{ name: "PixelCraft Studio Team" }],
 };
 

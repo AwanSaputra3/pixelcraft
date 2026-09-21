@@ -84,7 +84,7 @@ export const Dropzone: React.FC<DropzoneProps> = ({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`relative cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[280px] ${
+          className={`relative cursor-pointer rounded-2xl border-2 border-dashed p-5 sm:p-8 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[220px] sm:min-h-[280px] ${
             isDragOver
               ? "border-[#ff47ff] bg-[#ff47ff]/10 scale-[1.01] shadow-xl shadow-[#ff47ff]/20"
               : "border-neutral-800 bg-[#1c1c1c] hover:border-[#ff47ff]/50 hover:bg-[#222222]"
@@ -99,25 +99,25 @@ export const Dropzone: React.FC<DropzoneProps> = ({
             className="hidden"
           />
 
-          <div className="w-16 h-16 rounded-2xl bg-[#ff47ff]/15 border border-[#ff47ff]/30 flex items-center justify-center mb-4 text-[#ff47ff] group-hover:scale-110 transition-transform shadow-lg shadow-[#ff47ff]/10">
-            <CloudArrowUpIcon className="w-8 h-8 text-[#ff47ff]" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-[#ff47ff]/15 border border-[#ff47ff]/30 flex items-center justify-center mb-3 sm:mb-4 text-[#ff47ff] group-hover:scale-110 transition-transform shadow-lg shadow-[#ff47ff]/10">
+            <CloudArrowUpIcon className="w-6 h-6 sm:w-8 sm:h-8 text-[#ff47ff]" />
           </div>
 
-          <h3 className="text-base font-semibold text-white mb-1">
+          <h3 className="text-sm sm:text-base font-semibold text-white mb-1">
             Drag & drop your photo here, or <span className="text-[#ff47ff] underline">browse</span>
           </h3>
-          <p className="text-xs text-neutral-400 max-w-sm mb-6">
+          <p className="text-xs text-neutral-400 max-w-sm mb-4 sm:mb-6 px-2">
             Supports PNG, JPG, WebP, GIF & BMP up to 50MB. Processed 100% locally in your browser.
           </p>
 
           {/* Quick sample pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2" onClick={(e) => e.stopPropagation()}>
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2" onClick={(e) => e.stopPropagation()}>
             <span className="text-xs font-medium text-neutral-400">Or try demo image:</span>
             {SAMPLE_IMAGES.map((sample) => (
               <button
                 key={sample.name}
                 onClick={() => onSampleSelect(sample.url, sample.name)}
-                className="px-3 py-1 text-xs font-medium rounded-full bg-[#121212] hover:bg-[#ff47ff]/20 text-neutral-200 border border-neutral-700 hover:border-[#ff47ff]/40 flex items-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
+                className="px-2.5 sm:px-3 py-1 text-xs font-medium rounded-full bg-[#121212] hover:bg-[#ff47ff]/20 text-neutral-200 border border-neutral-700 hover:border-[#ff47ff]/40 flex items-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
               >
                 {sample.name}
                 <ArrowTopRightOnSquareIcon className="w-3 h-3 text-[#ff47ff]" />
@@ -127,30 +127,31 @@ export const Dropzone: React.FC<DropzoneProps> = ({
         </div>
       ) : (
         /* Image Loaded Metadata Bar */
-        <div className="glass-card-fintech rounded-2xl p-3 border border-neutral-800 flex flex-wrap items-center justify-between gap-3 text-xs text-neutral-300">
-          <div className="flex items-center gap-3">
-            <div className="px-2.5 py-1 rounded-full bg-[#ff47ff]/20 text-[#ff47ff] font-semibold uppercase tracking-wider text-[10px]">
+        <div className="glass-card-fintech rounded-2xl p-3 sm:p-3.5 border border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-neutral-300">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="px-2.5 py-1 rounded-full bg-[#ff47ff]/20 text-[#ff47ff] font-semibold uppercase tracking-wider text-[10px] shrink-0">
               {currentImageInfo.type.split("/")[1] || "IMG"}
             </div>
-            <div className="truncate max-w-[200px] font-medium text-white" title={currentImageInfo.name}>
+            <div className="truncate max-w-[160px] xs:max-w-[220px] sm:max-w-[280px] font-medium text-white" title={currentImageInfo.name}>
               {currentImageInfo.name}
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-neutral-400">
+          <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2.5 sm:gap-4 text-neutral-400 text-xs">
             <div>
-              Dimensions:{" "}
+              <span className="hidden xs:inline">Dimensions: </span>
               <span className="text-neutral-200 font-mono">
-                {currentImageInfo.width} × {currentImageInfo.height}px
+                {currentImageInfo.width}×{currentImageInfo.height}px
               </span>
             </div>
             <div>
-              Size: <span className="text-neutral-200 font-mono">{formatBytes(currentImageInfo.size)}</span>
+              <span className="hidden xs:inline">Size: </span>
+              <span className="text-neutral-200 font-mono">{formatBytes(currentImageInfo.size)}</span>
             </div>
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="px-3 py-1 rounded-full bg-[#121212] hover:bg-neutral-800 text-neutral-200 border border-neutral-700 hover:border-[#ff47ff]/40 transition-all duration-200 hover:scale-105 active:scale-95 font-medium shadow-sm"
+              className="px-3 py-1 rounded-full bg-[#121212] hover:bg-neutral-800 text-neutral-200 border border-neutral-700 hover:border-[#ff47ff]/40 transition-all duration-200 hover:scale-105 active:scale-95 font-medium shadow-sm shrink-0"
             >
               Change Image
             </button>

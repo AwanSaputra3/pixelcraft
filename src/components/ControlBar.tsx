@@ -109,9 +109,9 @@ export const ControlBar: React.FC<ControlBarProps> = ({
   };
 
   return (
-    <div className="w-full glass-card-fintech p-5 flex flex-col gap-5">
+    <div className="w-full glass-card-fintech p-3.5 sm:p-5 flex flex-col gap-4 sm:gap-5">
       {/* Tool Navigation Tabs with Sliding Animated Pill */}
-      <div className="flex items-center justify-between border-b border-neutral-800 pb-3.5 gap-1.5 overflow-x-auto">
+      <div className="flex items-center justify-start sm:justify-between border-b border-neutral-800 pb-3 gap-1.5 overflow-x-auto no-scrollbar">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

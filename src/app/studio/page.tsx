@@ -447,7 +447,7 @@ export default function StudioDashboardPage() {
       />
 
       {/* Main Studio Workspace Grid (Matching User Screenshot Layout) */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex flex-col gap-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 flex flex-col gap-4 sm:gap-6">
         {/* Top Upload Dropzone / Image Spec Bar */}
         <Dropzone
           onFileSelect={loadImageFile}

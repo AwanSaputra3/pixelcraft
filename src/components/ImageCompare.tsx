@@ -53,9 +53,14 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
     (e: TouchEvent) => {
       if (isDragging && e.touches[0]) {
         handleMove(e.touches[0].clientX);
+      } else if (isPanning && e.touches[0]) {
+        setPan({
+          x: e.touches[0].clientX - startPan.x,
+          y: e.touches[0].clientY - startPan.y,
+        });
       }
     },
-    [isDragging, handleMove]
+    [isDragging, isPanning, handleMove, startPan]
   );
 
   const handleMouseMove = useCallback(
@@ -81,7 +86,7 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
     if (isDragging || isPanning) {
       window.addEventListener("mousemove", handleMouseMove);
       window.addEventListener("mouseup", handleMouseUp);
-      window.addEventListener("touchmove", handleTouchMove);
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
       window.addEventListener("touchend", handleMouseUp);
     }
     return () => {
@@ -96,6 +101,14 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
     if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLInputElement) return;
     setIsPanning(true);
     setStartPan({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+  };
+
+  const handleTouchStartPan = (e: React.TouchEvent) => {
+    if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLInputElement) return;
+    if (e.touches.length === 1 && zoom > 1) {
+      setIsPanning(true);
+      setStartPan({ x: e.touches[0].clientX - pan.x, y: e.touches[0].clientY - pan.y });
+    }
   };
 
   const handleZoomIn = () => setZoom((z) => Math.min(4, z + 0.25));
@@ -120,9 +133,9 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
   return (
     <div className="w-full flex flex-col gap-3">
       {/* View & Zoom Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-1.5 bg-[#1c1c1c] rounded-2xl border border-neutral-800 text-xs text-neutral-300">
+      <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 px-2 py-1.5 bg-[#1c1c1c] rounded-2xl border border-neutral-800 text-xs text-neutral-300">
         {/* Mode Selector Tabs */}
-        <div className="flex items-center gap-1 bg-[#121212] p-1 rounded-xl border border-neutral-800 relative">
+        <div className="flex items-center gap-0.5 sm:gap-1 bg-[#121212] p-0.5 sm:p-1 rounded-xl border border-neutral-800 relative">
           {[
             { id: "split", label: "Split", icon: ArrowsRightLeftIcon, title: "Split Before/After Slider" },
             { id: "side", label: "Side-by-Side", icon: ViewColumnsIcon, title: "Side-by-Side Dual View" },
@@ -135,8 +148,8 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
               <button
                 key={mode.id}
                 onClick={() => setViewMode(mode.id as any)}
-                className={`relative flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold transition-all duration-300 active:scale-95 z-10 cursor-pointer ${
-                  isActive ? "text-black bg-[#ff47ff] shadow-sm" : "text-neutral-400 hover:text-white"
+                className={`relative flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold transition-all duration-300 active:scale-95 z-10 cursor-pointer ${
+                  isActive ? "text-black bg-[#ff47ff] shadow-sm font-bold" : "text-neutral-400 hover:text-white"
                 }`}
                 title={mode.title}
               >
@@ -148,12 +161,12 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
         </div>
 
         {/* Zoom Controls */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-[#121212] px-2.5 py-1 rounded-xl border border-neutral-800">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-0.5 sm:gap-1 bg-[#121212] px-2 sm:px-2.5 py-1 rounded-xl border border-neutral-800">
             <button onClick={handleZoomOut} className="p-1 hover:text-white transition-colors" title="Zoom Out">
               <MagnifyingGlassMinusIcon className="w-3.5 h-3.5" />
             </button>
-            <span className="w-10 text-center font-mono text-[11px] text-[#ff47ff] font-semibold">
+            <span className="w-8 sm:w-10 text-center font-mono text-[10px] sm:text-[11px] text-[#ff47ff] font-semibold">
               {Math.round(zoom * 100)}%
             </span>
             <button onClick={handleZoomIn} className="p-1 hover:text-white transition-colors" title="Zoom In">
@@ -163,7 +176,7 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
 
           <button
             onClick={handleResetZoom}
-            className="p-1.5 rounded-full bg-[#121212] hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
+            className="p-1 sm:p-1.5 rounded-full bg-[#121212] hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
             title="Reset Zoom & View"
           >
             <ArrowPathIcon className="w-3.5 h-3.5" />
@@ -171,7 +184,7 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
 
           <button
             onClick={toggleFullscreen}
-            className="p-1.5 rounded-full bg-[#121212] hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
+            className="p-1 sm:p-1.5 rounded-full bg-[#121212] hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
             title="Toggle Fullscreen"
           >
             <ArrowsPointingOutIcon className="w-3.5 h-3.5" />
@@ -183,7 +196,8 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
       <div
         ref={containerRef}
         onMouseDown={handleMouseDownPan}
-        className={`relative w-full h-[480px] sm:h-[560px] rounded-3xl overflow-hidden border border-neutral-800 checkerboard-bg select-none cursor-grab active:cursor-grabbing ${
+        onTouchStart={handleTouchStartPan}
+        className={`relative w-full h-[320px] xs:h-[380px] sm:h-[480px] md:h-[560px] rounded-2xl sm:rounded-3xl overflow-hidden border border-neutral-800 checkerboard-bg select-none cursor-grab active:cursor-grabbing ${
           isFullscreen ? "h-screen rounded-none" : ""
         }`}
       >

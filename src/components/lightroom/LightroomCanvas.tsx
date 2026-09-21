@@ -37,6 +37,23 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
     setStartPan({ x: e.clientX - pan.x, y: e.clientY - pan.y });
   };
 
+  const handleTouchStartPan = (e: React.TouchEvent) => {
+    if (e.target instanceof HTMLButtonElement) return;
+    if (e.touches.length === 1 && zoom > 1) {
+      setIsPanning(true);
+      setStartPan({ x: e.touches[0].clientX - pan.x, y: e.touches[0].clientY - pan.y });
+    }
+  };
+
+  const handleTouchMovePan = (e: React.TouchEvent) => {
+    if (isPanning && e.touches[0]) {
+      setPan({
+        x: e.touches[0].clientX - startPan.x,
+        y: e.touches[0].clientY - startPan.y,
+      });
+    }
+  };
+
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isPanning) {
       setPan({
@@ -59,13 +76,13 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
   const getAspectRatioStyle = () => {
     switch (options.aspectRatio) {
       case "1:1":
-        return "aspect-square max-h-[480px]";
+        return "aspect-square max-h-[300px] xs:max-h-[360px] sm:max-h-[480px]";
       case "4:5":
-        return "aspect-[4/5] max-h-[500px]";
+        return "aspect-[4/5] max-h-[320px] xs:max-h-[380px] sm:max-h-[500px]";
       case "9:16":
-        return "aspect-[9/16] max-h-[520px]";
+        return "aspect-[9/16] max-h-[320px] xs:max-h-[380px] sm:max-h-[520px]";
       case "16:9":
-        return "aspect-[16/9] max-h-[440px]";
+        return "aspect-[16/9] max-h-[280px] xs:max-h-[340px] sm:max-h-[440px]";
       default:
         return "w-full h-full";
     }
@@ -74,7 +91,7 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
   return (
     <div className="w-full flex flex-col gap-3">
       {/* Top View Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-1.5 bg-[#1c1c1c] rounded-2xl border border-neutral-800 text-xs text-neutral-300">
+      <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 px-2 py-1.5 bg-[#1c1c1c] rounded-2xl border border-neutral-800 text-xs text-neutral-300">
         {/* Press & Hold Before/After Button */}
         <button
           onMouseDown={() => setShowOriginal(true)}
@@ -82,27 +99,27 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
           onMouseLeave={() => setShowOriginal(false)}
           onTouchStart={() => setShowOriginal(true)}
           onTouchEnd={() => setShowOriginal(false)}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border font-semibold text-xs transition-all select-none ${
+          className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full border font-semibold text-xs transition-all select-none ${
             showOriginal
               ? "bg-[#ffc13c] text-black border-[#ffc13c] scale-105 shadow-md"
               : "bg-[#121212] text-neutral-300 hover:text-white border-neutral-800"
           }`}
           title="Press & hold to see original photo"
         >
-          {showOriginal ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4 text-[#ff47ff]" />}
-          <span>{showOriginal ? "BEFORE (ORIGINAL)" : "HOLD FOR BEFORE"}</span>
+          {showOriginal ? <EyeSlashIcon className="w-3.5 sm:w-4 h-3.5 sm:h-4" /> : <EyeIcon className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#ff47ff]" />}
+          <span className="text-[11px] sm:text-xs">{showOriginal ? "BEFORE (ORIGINAL)" : "HOLD FOR BEFORE"}</span>
         </button>
 
         {/* Zoom & Pan Controls */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-[#121212] px-2.5 py-1 rounded-xl border border-neutral-800">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-0.5 sm:gap-1 bg-[#121212] px-2 sm:px-2.5 py-1 rounded-xl border border-neutral-800">
             <button
               onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
               className="p-1 hover:text-white transition-colors"
             >
               <MagnifyingGlassMinusIcon className="w-3.5 h-3.5" />
             </button>
-            <span className="w-10 text-center font-mono text-[11px] text-[#ff47ff] font-semibold">
+            <span className="w-8 sm:w-10 text-center font-mono text-[10px] sm:text-[11px] text-[#ff47ff] font-semibold">
               {Math.round(zoom * 100)}%
             </span>
             <button
@@ -115,7 +132,7 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
 
           <button
             onClick={handleResetZoom}
-            className="p-1.5 rounded-full bg-[#121212] hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
+            className="p-1 sm:p-1.5 rounded-full bg-[#121212] hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
             title="Reset View"
           >
             <ArrowPathIcon className="w-3.5 h-3.5" />
@@ -130,7 +147,10 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="relative w-full h-[480px] sm:h-[560px] rounded-3xl overflow-hidden border border-neutral-800 checkerboard-bg select-none cursor-grab active:cursor-grabbing flex items-center justify-center"
+        onTouchStart={handleTouchStartPan}
+        onTouchMove={handleTouchMovePan}
+        onTouchEnd={handleMouseUp}
+        className="relative w-full h-[320px] xs:h-[380px] sm:h-[480px] md:h-[560px] rounded-2xl sm:rounded-3xl overflow-hidden border border-neutral-800 checkerboard-bg select-none cursor-grab active:cursor-grabbing flex items-center justify-center"
       >
         <div
           className={`relative flex items-center justify-center overflow-hidden transition-all duration-150 ${getAspectRatioStyle()}`}

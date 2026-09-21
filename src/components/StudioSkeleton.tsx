@@ -13,37 +13,37 @@ export const StudioSkeleton: React.FC<StudioSkeletonProps> = ({ type = "studio" 
       {/* Left 7 Columns: Canvas Preview Viewport Skeleton */}
       <div className="lg:col-span-7 flex flex-col gap-4">
         {/* Main Viewport Box */}
-        <div className="relative w-full h-[480px] sm:h-[560px] rounded-3xl skeleton-box border border-white/[0.08] flex flex-col items-center justify-center p-6 text-center shadow-2xl">
+        <div className="relative w-full h-[320px] xs:h-[380px] sm:h-[480px] md:h-[560px] rounded-2xl sm:rounded-3xl skeleton-box border border-white/[0.08] flex flex-col items-center justify-center p-4 sm:p-6 text-center shadow-2xl">
           {/* Subtle Ambient Glow */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#ff47ff]/5 via-transparent to-[#bd99f8]/5 pointer-events-none rounded-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#ff47ff]/5 via-transparent to-[#bd99f8]/5 pointer-events-none rounded-2xl sm:rounded-3xl" />
 
           {/* Glowing Center Badge */}
           <div className="relative z-10 flex flex-col items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[#ff47ff] animate-pulse">
-              <SparklesIcon className="w-7 h-7 text-[#ff47ff]" />
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[#ff47ff] animate-pulse">
+              <SparklesIcon className="w-6 h-6 sm:w-7 sm:h-7 text-[#ff47ff]" />
             </div>
             <div className="flex flex-col items-center gap-1.5">
-              <div className="h-4 w-40 skeleton-box rounded-md" />
-              <div className="h-3 w-56 skeleton-box rounded-md opacity-60" />
+              <div className="h-4 w-32 sm:w-40 skeleton-box rounded-md" />
+              <div className="h-3 w-44 sm:w-56 skeleton-box rounded-md opacity-60" />
             </div>
           </div>
 
           {/* Bottom Viewport Control Pills Skeleton */}
-          <div className="absolute bottom-4 inset-x-6 flex items-center justify-between">
-            <div className="flex items-center gap-1.5 p-1 rounded-full bg-white/5 border border-white/5">
-              <div className="h-6 w-16 skeleton-box rounded-full" />
-              <div className="h-6 w-16 skeleton-box rounded-full" />
-              <div className="h-6 w-16 skeleton-box rounded-full" />
+          <div className="absolute bottom-3 sm:bottom-4 inset-x-4 sm:inset-x-6 flex items-center justify-between">
+            <div className="flex items-center gap-1 sm:gap-1.5 p-1 rounded-full bg-white/5 border border-white/5">
+              <div className="h-5 sm:h-6 w-12 sm:w-16 skeleton-box rounded-full" />
+              <div className="h-5 sm:h-6 w-12 sm:w-16 skeleton-box rounded-full" />
+              <div className="h-5 sm:h-6 w-12 sm:w-16 skeleton-box rounded-full" />
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="h-8 w-8 skeleton-box rounded-full" />
-              <div className="h-8 w-8 skeleton-box rounded-full" />
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              <div className="h-7 sm:h-8 w-7 sm:w-8 skeleton-box rounded-full" />
+              <div className="h-7 sm:h-8 w-7 sm:w-8 skeleton-box rounded-full" />
             </div>
           </div>
         </div>
 
         {/* Histogram / Audio-visual Bar Skeleton */}
-        <div className="w-full h-[64px] rounded-2xl skeleton-box border border-white/[0.08] flex items-center justify-between px-4">
+        <div className="w-full h-[56px] sm:h-[64px] rounded-2xl skeleton-box border border-white/[0.08] flex items-center justify-between px-4">
           <div className="h-3 w-28 skeleton-box rounded-md opacity-70" />
           <div className="flex items-end gap-1 h-8">
             {[40, 65, 85, 50, 95, 70, 30, 60, 80, 45, 90, 75, 35, 55, 70, 85, 60].map((h, i) => (
@@ -59,7 +59,7 @@ export const StudioSkeleton: React.FC<StudioSkeletonProps> = ({ type = "studio" 
 
       {/* Right 5 Columns: Controls Sidebar Skeleton */}
       <div className="lg:col-span-5 flex flex-col gap-4">
-        <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] flex flex-col gap-5 shadow-2xl">
+        <div className="glass-panel p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-white/[0.08] flex flex-col gap-4 sm:gap-5 shadow-2xl">
           {/* Tabs Pill Bar Skeleton */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             <div className="h-8 w-24 skeleton-box rounded-full" />

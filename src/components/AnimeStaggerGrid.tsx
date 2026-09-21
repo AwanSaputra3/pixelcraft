@@ -40,8 +40,8 @@ export const AnimeStaggerGrid: React.FC<AnimeStaggerGridProps> = ({ className = 
   return (
     <div className={`w-full flex flex-col items-center gap-3 select-none ${className}`}>
       {/* Control Header */}
-      <div className="flex items-center justify-between w-full max-w-xl px-2 text-xs">
-        <div className="flex items-center gap-2 text-neutral-300 font-semibold">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full max-w-xl px-2 gap-2 text-xs">
+        <div className="flex items-center gap-2 text-neutral-300 font-semibold flex-wrap">
           <span className="w-2 h-2 rounded-full bg-[#ff47ff] animate-pulse" />
           <span className="flex items-center gap-1.5 text-xs text-white">
             <SparklesIcon className="w-4 h-4 text-[#ff47ff]" /> Interactive Stagger Matrix
@@ -51,10 +51,10 @@ export const AnimeStaggerGrid: React.FC<AnimeStaggerGridProps> = ({ className = 
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 self-end sm:self-auto">
           <button
             onClick={() => handlePatternClick("center")}
-            className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
+            className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
               activePattern === "center"
                 ? "bg-[#ff47ff] text-black font-bold shadow-sm"
                 : "bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white"
@@ -65,7 +65,7 @@ export const AnimeStaggerGrid: React.FC<AnimeStaggerGridProps> = ({ className = 
 
           <button
             onClick={() => handlePatternClick("spiral")}
-            className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
+            className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
               activePattern === "spiral"
                 ? "bg-[#ff47ff] text-black font-bold shadow-sm"
                 : "bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white"
@@ -85,9 +85,9 @@ export const AnimeStaggerGrid: React.FC<AnimeStaggerGridProps> = ({ className = 
       </div>
 
       {/* Grid Canvas Container */}
-      <div className="p-4 rounded-2xl bg-[#161616]/90 border border-white/[0.08] shadow-2xl backdrop-blur-xl flex flex-col gap-2 max-w-xl w-full">
+      <div className="p-2.5 sm:p-4 rounded-2xl bg-[#161616]/90 border border-white/[0.08] shadow-2xl backdrop-blur-xl flex flex-col gap-1 sm:gap-2 max-w-xl w-full">
         {Array.from({ length: rows }).map((_, r) => (
-          <div key={r} className="flex items-center justify-between gap-2 w-full">
+          <div key={r} className="flex items-center justify-between gap-1 sm:gap-2 w-full">
             {Array.from({ length: cols }).map((_, c) => {
               const index = r * cols + c;
               const colorClass =
@@ -116,7 +116,7 @@ export const AnimeStaggerGrid: React.FC<AnimeStaggerGridProps> = ({ className = 
                 <div
                   key={`${r}-${c}`}
                   onClick={() => triggerRipple(r, c)}
-                  className={`anime-pixel-node flex-1 aspect-square rounded-md border border-white/10 cursor-pointer transition-transform duration-200 ease-out hover:scale-125 hover:z-20 hover:shadow-lg hover:shadow-[#ff47ff]/50 active:scale-95 ${colorClass} ${waveClass}`}
+                  className={`anime-pixel-node flex-1 aspect-square rounded-[3px] sm:rounded-md border border-white/10 cursor-pointer transition-transform duration-200 ease-out hover:scale-125 hover:z-20 hover:shadow-lg hover:shadow-[#ff47ff]/50 active:scale-95 ${colorClass} ${waveClass}`}
                   style={{ animationDelay: `${delay}ms` }}
                   title={`Click pixel #${index + 1} to ripple wave`}
                 />

@@ -109,8 +109,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
-      <div className="relative w-full max-w-lg glass-panel rounded-3xl border border-neutral-800 p-6 flex flex-col gap-5 shadow-2xl animate-scale-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-4 animate-fade-in">
+      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto glass-panel rounded-2xl sm:rounded-3xl border border-neutral-800 p-4 sm:p-6 flex flex-col gap-4 sm:gap-5 shadow-2xl animate-scale-in">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
           <div className="flex items-center gap-2">
@@ -118,8 +118,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <SparklesIcon className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Export Processed Image</h3>
-              <p className="text-xs text-neutral-400">Save to your device or copy to clipboard</p>
+              <h3 className="text-sm sm:text-base font-bold text-white">Export Processed Image</h3>
+              <p className="text-[11px] sm:text-xs text-neutral-400">Save to your device or copy to clipboard</p>
             </div>
           </div>
           <button
@@ -131,12 +131,12 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         </div>
 
         {/* Thumbnail Preview */}
-        <div className="w-full h-44 rounded-2xl border border-neutral-800 checkerboard-bg flex items-center justify-center overflow-hidden">
+        <div className="w-full h-32 xs:h-36 sm:h-44 rounded-2xl border border-neutral-800 checkerboard-bg flex items-center justify-center overflow-hidden">
           <img src={imageDataUrl} alt="Export preview" className="max-w-full max-h-full object-contain" />
         </div>
 
         {/* Form Controls */}
-        <div className="flex flex-col gap-4 text-xs">
+        <div className="flex flex-col gap-3.5 sm:gap-4 text-xs">
           {/* File Name */}
           <div className="flex flex-col gap-1">
             <label className="text-neutral-300 font-medium">File Name</label>
@@ -153,16 +153,16 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             <label className="text-neutral-300 font-medium">Export Format</label>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { id: "png", label: "PNG (Lossless & Alpha)" },
-                { id: "jpeg", label: "JPG (High Compression)" },
-                { id: "webp", label: "WebP (Modern Web)" },
+                { id: "png", label: "PNG (Lossless)" },
+                { id: "jpeg", label: "JPG (Compressed)" },
+                { id: "webp", label: "WebP (Modern)" },
               ].map((f) => (
                 <button
                   key={f.id}
                   onClick={() => setFormat(f.id as any)}
-                  className={`px-3 py-2 rounded-full border font-semibold transition-all ${
+                  className={`px-2 sm:px-3 py-2 rounded-full border font-semibold text-xs transition-all ${
                     format === f.id
-                      ? "bg-[#ff47ff] border-[#ff47ff] text-black"
+                      ? "bg-[#ff47ff] border-[#ff47ff] text-black shadow-sm"
                       : "bg-[#121212] border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
                   }`}
                 >
@@ -199,10 +199,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center gap-3 pt-2 border-t border-neutral-800">
+        <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 pt-2 border-t border-neutral-800">
           <button
             onClick={handleCopyClipboard}
-            className="flex-1 py-2.5 rounded-full bg-[#1c1c1c] hover:bg-neutral-800 border border-neutral-700 text-neutral-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors"
+            className="w-full sm:flex-1 py-2.5 rounded-full bg-[#1c1c1c] hover:bg-neutral-800 border border-neutral-700 text-neutral-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors active:scale-95"
           >
             {copied ? (
               <>
@@ -217,7 +217,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
           <button
             onClick={handleDownload}
-            className="flex-1 py-2.5 rounded-full bg-[#ff47ff] hover:bg-[#e035e0] text-black font-semibold text-xs shadow-lg shadow-[#ff47ff]/25 flex items-center justify-center gap-1.5 transition-all"
+            className="w-full sm:flex-1 py-2.5 rounded-full bg-[#ff47ff] hover:bg-[#e035e0] text-black font-semibold text-xs shadow-lg shadow-[#ff47ff]/25 flex items-center justify-center gap-1.5 transition-all active:scale-95"
           >
             <ArrowDownTrayIcon className="w-4 h-4" /> Download Photo
           </button>

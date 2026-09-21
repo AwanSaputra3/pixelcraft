@@ -30,33 +30,33 @@ export default function LandingPage() {
       />
 
       {/* Main Hero Section */}
-      <main className="flex-1 flex flex-col items-center justify-between relative overflow-hidden pt-12 pb-24 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 flex flex-col items-center justify-between relative overflow-hidden pt-6 sm:pt-12 pb-16 sm:pb-24 px-3 sm:px-6 lg:px-8">
         <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center relative z-10">
           
           {/* Main Hero Centered Headline */}
-          <h1 className="text-5xl sm:text-7xl md:text-8xl font-semibold text-white tracking-tight leading-[1.08] max-w-4xl mx-auto animate-slide-up">
+          <h1 className="text-3xl xs:text-4.5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold text-white tracking-tight leading-[1.15] sm:leading-[1.08] max-w-4xl mx-auto animate-slide-up px-1">
             Elevate Your <br />
             <span className="font-semibold bg-gradient-to-r from-white via-[#bd99f8] to-[#ff47ff] bg-clip-text text-transparent">
               Editing Experience
             </span>
           </h1>
 
-          <p className="max-w-xl mx-auto text-sm sm:text-base text-neutral-400 font-normal leading-relaxed pt-5 animate-fade-in" style={{ animationDelay: '150ms', animationFillMode: 'both' }}>
+          <p className="max-w-xl mx-auto text-xs xs:text-sm sm:text-base text-neutral-400 font-normal leading-relaxed pt-3 sm:pt-5 px-2 animate-fade-in" style={{ animationDelay: '150ms', animationFillMode: 'both' }}>
             Make photos clearer and sharper in just a click with AI-powered technology in a 100% client-side privacy-first environment.
           </p>
 
-          <div className="pt-8 pb-4 relative z-30 animate-fade-in" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+          <div className="pt-6 sm:pt-8 pb-3 sm:pb-4 relative z-30 animate-fade-in" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
             <Link
               href="/studio"
-              className="px-8 py-3.5 rounded-full bg-[#ff47ff] text-black font-semibold text-sm shadow-[0_0_35px_rgba(255,71,255,0.45)] hover:shadow-[0_0_50px_rgba(255,71,255,0.7)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2"
+              className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#ff47ff] text-black font-semibold text-xs sm:text-sm shadow-[0_0_35px_rgba(255,71,255,0.45)] hover:shadow-[0_0_50px_rgba(255,71,255,0.7)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2"
             >
               <span>Launch Studio & Enhance</span>
-              <ArrowTopRightOnSquareIcon className="w-4.5 h-4.5 text-black" />
+              <ArrowTopRightOnSquareIcon className="w-4 sm:w-4.5 h-4 sm:h-4.5 text-black" />
             </Link>
           </div>
 
           {/* 3D Organic Fluid Wave Display Container with Floating Metric Cards */}
-          <div className="relative w-full max-w-5xl mt-6 min-h-[420px] flex items-center justify-center">
+          <div className="relative w-full max-w-5xl mt-2 sm:mt-6 min-h-[200px] xs:min-h-[260px] sm:min-h-[360px] md:min-h-[420px] flex items-center justify-center">
             
             {/* 3D Organic Fluid Ribbon Center Visual */}
             <div className="relative w-full flex items-center justify-center">
@@ -111,14 +111,14 @@ export default function LandingPage() {
           </div>
 
           {/* Anime.js v4 Interactive Stagger Matrix */}
-          <AnimeStaggerGrid className="mt-10 mb-2 z-20 relative" />
+          <AnimeStaggerGrid className="mt-6 sm:mt-10 mb-2 z-20 relative" />
 
           {/* Interactive Feature Cards Grid */}
-          <div id="features" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full pt-16 text-left scroll-mt-24">
+          <div id="features" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full pt-12 sm:pt-16 text-left scroll-mt-24">
             {/* Card 1: Enhance */}
             <Link
               href="/studio"
-              className="group glass-card-fintech p-6 hover:border-[#ff47ff]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-1"
+              className="group glass-card-fintech p-5 sm:p-6 hover:border-[#ff47ff]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-1"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-11 h-11 rounded-2xl bg-[#ff47ff]/10 border border-[#ff47ff]/20 flex items-center justify-center text-[#ff47ff] group-hover:scale-110 transition-transform">

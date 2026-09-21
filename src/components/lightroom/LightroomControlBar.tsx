@@ -462,7 +462,7 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-neutral-300 font-medium">Aspect Ratio Preset</label>
-            <div className="grid grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
               {[
                 { id: "free", label: "Free" },
                 { id: "1:1", label: "1:1 Square" },

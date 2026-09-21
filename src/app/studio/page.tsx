@@ -7,6 +7,7 @@ import { ImageCompare } from "../../components/ImageCompare";
 import { ControlBar, ToolTab } from "../../components/ControlBar";
 import { ExportModal } from "../../components/ExportModal";
 import { StudioSkeleton } from "../../components/StudioSkeleton";
+import { Footer } from "../../components/Footer";
 
 import {
   EnhanceOptions,
@@ -511,6 +512,9 @@ export default function StudioDashboardPage() {
         width={imageInfo?.width || 1920}
         height={imageInfo?.height || 1080}
       />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

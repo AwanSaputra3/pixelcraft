@@ -50,7 +50,7 @@ export const HslMixer: React.FC<HslMixerProps> = ({
       </div>
 
       {/* Color Circle Picker Bar */}
-      <div className="flex items-center justify-between gap-1 overflow-x-auto pb-1">
+      <div className="flex items-center justify-start sm:justify-between gap-1 overflow-x-auto pb-1 no-scrollbar">
         {HSL_COLORS.map((c) => {
           const isSelected = activeColor === c.id;
           const channel = hslOptions[c.id];
@@ -60,7 +60,7 @@ export const HslMixer: React.FC<HslMixerProps> = ({
             <button
               key={c.id}
               onClick={() => setActiveColor(c.id)}
-              className={`relative flex flex-col items-center gap-1 p-1.5 rounded-xl transition-all ${
+              className={`relative flex flex-col items-center gap-1 p-1.5 rounded-xl transition-all shrink-0 cursor-pointer ${
                 isSelected
                   ? "bg-[#2a2a2a] border-2 border-[#ff47ff] scale-110 shadow-lg shadow-[#ff47ff]/20"
                   : "hover:bg-[#252525] border border-transparent"

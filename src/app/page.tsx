@@ -13,6 +13,7 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { AnimeStaggerGrid } from "../components/AnimeStaggerGrid";
+import { Footer } from "../components/Footer";
 
 export default function LandingPage() {
   return (
@@ -144,7 +145,7 @@ export default function LandingPage() {
             {/* Card 2: Compress */}
             <Link
               href="/studio"
-              className="group glass-card-fintech p-6 hover:border-[#ffc13c]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-2"
+              className="group glass-card-fintech p-5 sm:p-6 hover:border-[#ffc13c]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-2"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-11 h-11 rounded-2xl bg-[#ffc13c]/10 border border-[#ffc13c]/20 flex items-center justify-center text-[#ffc13c] group-hover:scale-110 transition-transform">
@@ -170,7 +171,7 @@ export default function LandingPage() {
             {/* Card 3: Denoise */}
             <Link
               href="/studio"
-              className="group glass-card-fintech p-6 hover:border-[#bd99f8]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-3"
+              className="group glass-card-fintech p-5 sm:p-6 hover:border-[#bd99f8]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-3"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-11 h-11 rounded-2xl bg-[#bd99f8]/10 border border-[#bd99f8]/20 flex items-center justify-center text-[#bd99f8] group-hover:scale-110 transition-transform">
@@ -196,7 +197,7 @@ export default function LandingPage() {
             {/* Card 4: Pixel Art */}
             <Link
               href="/studio"
-              className="group glass-card-fintech p-6 hover:border-[#ffc13c]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-4"
+              className="group glass-card-fintech p-5 sm:p-6 hover:border-[#ffc13c]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-4"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-11 h-11 rounded-2xl bg-[#ffc13c]/10 border border-[#ffc13c]/20 flex items-center justify-center text-[#ffc13c] group-hover:scale-110 transition-transform">
@@ -222,7 +223,7 @@ export default function LandingPage() {
             {/* Card 5: Remove BG */}
             <Link
               href="/studio"
-              className="group glass-card-fintech p-6 hover:border-[#64ed68]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-5"
+              className="group glass-card-fintech p-5 sm:p-6 hover:border-[#64ed68]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-5"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-11 h-11 rounded-2xl bg-[#64ed68]/10 border border-[#64ed68]/20 flex items-center justify-center text-[#64ed68] group-hover:scale-110 transition-transform">
@@ -248,7 +249,7 @@ export default function LandingPage() {
             {/* Card 6: Color Editor */}
             <Link
               href="/editor"
-              className="group glass-card-fintech p-6 hover:border-[#ff47ff]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-6"
+              className="group glass-card-fintech p-5 sm:p-6 hover:border-[#ff47ff]/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between animate-slide-up stagger-6"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-11 h-11 rounded-2xl bg-[#ff47ff]/10 border border-[#ff47ff]/20 flex items-center justify-center text-[#ff47ff] group-hover:scale-110 transition-transform">
@@ -273,6 +274,9 @@ export default function LandingPage() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

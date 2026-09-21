@@ -378,9 +378,9 @@ export const ControlBar: React.FC<ControlBarProps> = ({
           </div>
 
           {/* Compress Execution Button & Savings Stats */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#121212] border border-neutral-800">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#121212] border border-neutral-800">
             {compressResult ? (
-              <div className="flex items-center gap-4 text-xs">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs">
                 <div>
                   <span className="text-neutral-400">Original:</span>{" "}
                   <span className="font-mono text-neutral-200">{formatBytes(compressResult.originalSize)}</span>
@@ -397,14 +397,14 @@ export const ControlBar: React.FC<ControlBarProps> = ({
               </div>
             ) : (
               <div className="text-xs text-neutral-400 flex items-center gap-1.5">
-                <InformationCircleIcon className="w-4 h-4 text-[#ff47ff]" /> Click to compute instant file size savings
+                <InformationCircleIcon className="w-4 h-4 text-[#ff47ff] shrink-0" /> Click to compute instant file size savings
               </div>
             )}
 
             <button
               onClick={onTriggerCompress}
               disabled={isProcessing}
-              className="px-5 py-2.5 rounded-full bg-[#ff47ff] hover:bg-[#e035e0] text-black font-semibold text-xs shadow-lg shadow-[#ff47ff]/25 flex items-center gap-1.5 transition-all"
+              className="w-full sm:w-auto justify-center px-5 py-2.5 rounded-full bg-[#ff47ff] hover:bg-[#e035e0] text-black font-semibold text-xs shadow-lg shadow-[#ff47ff]/25 flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
             >
               <ArchiveBoxIcon className="w-4 h-4" /> Run Compression
             </button>
@@ -593,15 +593,15 @@ export const ControlBar: React.FC<ControlBarProps> = ({
           </div>
 
           {/* AI Run Button */}
-          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#121212] border border-neutral-800">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#121212] border border-neutral-800">
             <div className="flex items-center gap-2 text-xs text-neutral-300">
-              <SparklesIcon className="w-4 h-4 text-[#64ed68] animate-pulse" />
+              <SparklesIcon className="w-4 h-4 text-[#64ed68] animate-pulse shrink-0" />
               <span>Automatic subject neural segmentation (WASM Client-Side)</span>
             </div>
             <button
               onClick={onTriggerRemoveBg}
               disabled={isProcessing}
-              className="px-5 py-2.5 rounded-full bg-[#ff47ff] hover:bg-[#e035e0] text-black font-semibold text-xs shadow-lg shadow-[#ff47ff]/25 flex items-center gap-1.5 transition-all"
+              className="w-full sm:w-auto justify-center px-5 py-2.5 rounded-full bg-[#ff47ff] hover:bg-[#e035e0] text-black font-semibold text-xs shadow-lg shadow-[#ff47ff]/25 flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
             >
               <ScissorsIcon className="w-4 h-4" /> Remove Background
             </button>
@@ -611,12 +611,12 @@ export const ControlBar: React.FC<ControlBarProps> = ({
           <div className="flex flex-col gap-3 bg-[#121212] p-3.5 rounded-2xl border border-neutral-800">
             <label className="text-xs text-neutral-300 font-semibold">Background Backdrop Replacement</label>
 
-            <div className="flex items-center gap-2 border-b border-neutral-800 pb-2">
+            <div className="flex items-center gap-2 border-b border-neutral-800 pb-2 overflow-x-auto no-scrollbar">
               {(["transparent", "solid", "gradient", "customImage"] as BgType[]).map((t) => (
                 <button
                   key={t}
                   onClick={() => setRemoveBgOptions((prev) => ({ ...prev, bgType: t }))}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium capitalize transition-colors ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium capitalize transition-colors shrink-0 cursor-pointer ${
                     removeBgOptions.bgType === t
                       ? "bg-[#ff47ff] text-black font-semibold"
                       : "bg-[#1c1c1c] text-neutral-400 hover:text-white border border-neutral-800"

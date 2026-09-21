@@ -7,6 +7,7 @@ import { LightroomCanvas } from "../../components/lightroom/LightroomCanvas";
 import { LightroomControlBar, LightroomTab } from "../../components/lightroom/LightroomControlBar";
 import { ExportModal } from "../../components/ExportModal";
 import { StudioSkeleton } from "../../components/StudioSkeleton";
+import { Footer } from "../../components/Footer";
 import {
   LightroomOptions,
   defaultLightroomOptions,
@@ -402,6 +403,9 @@ export default function LightroomEditorPage() {
         width={imageInfo?.width || 1920}
         height={imageInfo?.height || 1080}
       />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

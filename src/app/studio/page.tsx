@@ -80,8 +80,21 @@ export default function StudioDashboardPage() {
   const [histogram, setHistogram] = useState<HistogramData | null>(null);
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
 
-  // Canvas Refs
-  const workingCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  // High performance Canvas and Object URL Cache Refs
+  const cachedOriginalImgRef = useRef<HTMLImageElement | null>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fullCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const currentBlobUrlRef = useRef<string>("");
+  const rafIdRef = useRef<number | null>(null);
+
+  // Clean up Blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (currentBlobUrlRef.current && currentBlobUrlRef.current.startsWith("blob:")) {
+        URL.revokeObjectURL(currentBlobUrlRef.current);
+      }
+    };
+  }, []);
 
   // Auto load initial demo sample portrait on first load if no file present
   useEffect(() => {
@@ -95,7 +108,9 @@ export default function StudioDashboardPage() {
   const loadImageFile = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.onload = () => {
+      cachedOriginalImgRef.current = img;
       setOriginalFile(file);
       setOriginalUrl(url);
       setProcessedUrl(url);
@@ -106,6 +121,39 @@ export default function StudioDashboardPage() {
         height: img.height,
         type: file.type || "image/png",
       });
+
+      // Prepare Downscaled Preview Buffer Canvas (Max 1200px dimension for 60fps slider response)
+      const maxDim = 1200;
+      let pWidth = img.width;
+      let pHeight = img.height;
+      if (pWidth > maxDim || pHeight > maxDim) {
+        if (pWidth > pHeight) {
+          pHeight = Math.round((pHeight * maxDim) / pWidth);
+          pWidth = maxDim;
+        } else {
+          pWidth = Math.round((pWidth * maxDim) / pHeight);
+          pHeight = maxDim;
+        }
+      }
+
+      const pCanvas = document.createElement("canvas");
+      pCanvas.width = pWidth;
+      pCanvas.height = pHeight;
+      const pCtx = pCanvas.getContext("2d");
+      if (pCtx) {
+        pCtx.drawImage(img, 0, 0, pWidth, pHeight);
+      }
+      previewCanvasRef.current = pCanvas;
+
+      // Prepare Full Resolution Source Canvas
+      const fCanvas = document.createElement("canvas");
+      fCanvas.width = img.width;
+      fCanvas.height = img.height;
+      const fCtx = fCanvas.getContext("2d");
+      if (fCtx) {
+        fCtx.drawImage(img, 0, 0);
+      }
+      fullCanvasRef.current = fCanvas;
 
       // Add to Queue
       const newId = Math.random().toString(36).substring(7);
@@ -200,41 +248,44 @@ export default function StudioDashboardPage() {
     }
   };
 
-  // Real-time Canvas Processor for Enhance, Denoise, Pixelate
+  // Silky-Smooth RequestAnimationFrame Live Engine Processing Loop
   useEffect(() => {
-    if (!originalUrl || !imageInfo) return;
+    if (!originalUrl || !cachedOriginalImgRef.current || !previewCanvasRef.current) return;
 
     if (activeTab === "removeBg" || activeTab === "compress") {
       return;
     }
 
-    let isSubscribed = true;
-    const img = new Image();
-    img.crossOrigin = "anonymous";
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+    }
 
-    img.onload = () => {
-      if (!isSubscribed) return;
+    rafIdRef.current = requestAnimationFrame(() => {
+      const img = cachedOriginalImgRef.current;
+      const previewCanvas = previewCanvasRef.current;
+      if (!img || !previewCanvas) return;
 
-      const canvas = workingCanvasRef.current || document.createElement("canvas");
-      workingCanvasRef.current = canvas;
-      canvas.width = img.width;
-      canvas.height = img.height;
+      const pWidth = previewCanvas.width;
+      const pHeight = previewCanvas.height;
 
-      const ctx = canvas.getContext("2d");
+      const workCanvas = document.createElement("canvas");
+      workCanvas.width = pWidth;
+      workCanvas.height = pHeight;
+      const ctx = workCanvas.getContext("2d");
       if (!ctx) return;
 
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, pWidth, pHeight);
 
       let processedImageData: ImageData;
 
       if (activeTab === "enhance") {
-        processedImageData = applyEnhance(ctx, img.width, img.height, enhanceOptions);
+        processedImageData = applyEnhance(ctx, pWidth, pHeight, enhanceOptions);
       } else if (activeTab === "denoise") {
-        processedImageData = applyDenoise(ctx, img.width, img.height, denoiseOptions);
+        processedImageData = applyDenoise(ctx, pWidth, pHeight, denoiseOptions);
       } else if (activeTab === "pixelate") {
-        processedImageData = applyPixelate(ctx, img.width, img.height, pixelateOptions);
+        processedImageData = applyPixelate(ctx, pWidth, pHeight, pixelateOptions);
       } else {
-        processedImageData = ctx.getImageData(0, 0, img.width, img.height);
+        processedImageData = ctx.getImageData(0, 0, pWidth, pHeight);
       }
 
       ctx.putImageData(processedImageData, 0, 0);
@@ -242,20 +293,29 @@ export default function StudioDashboardPage() {
       const hist = computeHistogram(processedImageData);
       setHistogram(hist);
 
-      const dataUrl = canvas.toDataURL("image/png");
-      if (isSubscribed) {
-        setProcessedUrl(dataUrl);
-      }
-    };
+      workCanvas.toBlob(
+        (blob) => {
+          if (!blob) return;
+          const newUrl = URL.createObjectURL(blob);
 
-    img.src = originalUrl;
+          if (currentBlobUrlRef.current && currentBlobUrlRef.current.startsWith("blob:")) {
+            URL.revokeObjectURL(currentBlobUrlRef.current);
+          }
+          currentBlobUrlRef.current = newUrl;
+          setProcessedUrl(newUrl);
+        },
+        "image/jpeg",
+        0.92
+      );
+    });
 
     return () => {
-      isSubscribed = false;
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
     };
   }, [
     originalUrl,
-    imageInfo,
     activeTab,
     enhanceOptions,
     denoiseOptions,
@@ -303,13 +363,42 @@ export default function StudioDashboardPage() {
     }
   };
 
+  // Generate Full High-Resolution Render on Export
+  const handleOpenExport = () => {
+    if (!cachedOriginalImgRef.current || !fullCanvasRef.current) {
+      setIsExportOpen(true);
+      return;
+    }
+
+    if (activeTab === "enhance" || activeTab === "denoise" || activeTab === "pixelate") {
+      const img = cachedOriginalImgRef.current;
+      const fCanvas = fullCanvasRef.current;
+      const ctx = fCanvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        let fullProcessed: ImageData;
+        if (activeTab === "enhance") {
+          fullProcessed = applyEnhance(ctx, img.width, img.height, enhanceOptions);
+        } else if (activeTab === "denoise") {
+          fullProcessed = applyDenoise(ctx, img.width, img.height, denoiseOptions);
+        } else {
+          fullProcessed = applyPixelate(ctx, img.width, img.height, pixelateOptions);
+        }
+        ctx.putImageData(fullProcessed, 0, 0);
+        const fullDataUrl = fCanvas.toDataURL("image/png");
+        setProcessedUrl(fullDataUrl);
+      }
+    }
+    setIsExportOpen(true);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#090d16] text-gray-100 selection:bg-purple-500 selection:text-white pb-12">
+    <div className="min-h-screen flex flex-col bg-[#070510] starry-bg text-gray-100 selection:bg-purple-500 selection:text-white pb-12">
       {/* Navbar Header */}
       <Header
         onSelectSample={handleSelectSample}
         onReset={handleResetAll}
-        onExport={() => setIsExportOpen(true)}
+        onExport={handleOpenExport}
         hasImage={!!originalUrl}
         activeTab={activeTab}
         setActiveTab={setActiveTab}

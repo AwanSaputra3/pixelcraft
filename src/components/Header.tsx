@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, ShieldCheck, Image as ImageIcon, RotateCcw, Download, Sliders, Home, Wand2 } from "lucide-react";
+import { Sparkles, ShieldCheck, Image as ImageIcon, RotateCcw, Download, ArrowUpRight, Sliders, Wand2 } from "lucide-react";
 
 interface HeaderProps {
   onSelectSample: (sampleUrl: string, sampleName: string) => void;
@@ -41,99 +41,81 @@ export const Header: React.FC<HeaderProps> = ({
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-gray-800/60 bg-[#090d16]/90 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Logo & Navigation Tabs */}
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-cyan-400 p-[2px] shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
-              <div className="w-full h-full bg-[#090d16] rounded-[10px] flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-purple-400" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold bg-gradient-to-r from-white via-gray-200 to-purple-400 bg-clip-text text-transparent tracking-tight">
-                  PixelCraft Studio
-                </h1>
-                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <ShieldCheck className="w-3 h-3" />
-                  100% Client Privacy
-                </span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Mode Navigation Switcher (Home / Studio / Lightroom) */}
-          <nav className="hidden md:flex items-center gap-1 bg-gray-950 p-1 rounded-xl border border-gray-800/80 text-xs">
-            <Link
-              href="/"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-                pathname === "/"
-                  ? "bg-purple-600 text-white shadow-md shadow-purple-500/20"
-                  : "text-gray-400 hover:text-gray-200 hover:bg-gray-900"
-              }`}
-            >
-              <Home className="w-3.5 h-3.5" /> Home
-            </Link>
-            <Link
-              href="/studio"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-                pathname === "/studio"
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md shadow-purple-500/20"
-                  : "text-gray-400 hover:text-gray-200 hover:bg-gray-900"
-              }`}
-            >
-              <Sliders className="w-3.5 h-3.5" /> Toolkit Studio
-            </Link>
-            <Link
-              href="/editor"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-                pathname === "/editor"
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md shadow-purple-500/20"
-                  : "text-gray-400 hover:text-gray-200 hover:bg-gray-900"
-              }`}
-            >
-              <Wand2 className="w-3.5 h-3.5 text-pink-400" /> Pro Color Editor
-            </Link>
-          </nav>
-        </div>
-
-        {/* Quick Sample Selector (Visible on Studio & Editor pages) */}
-        {pathname !== "/" && (
-          <div className="hidden lg:flex items-center gap-2">
-            <span className="text-xs text-gray-400 flex items-center gap-1">
-              <ImageIcon className="w-3.5 h-3.5" /> Sample:
-            </span>
-            <div className="flex items-center gap-1.5">
-              {SAMPLE_IMAGES.map((sample) => (
-                <button
-                  key={sample.name}
-                  onClick={() => onSelectSample(sample.url, sample.name)}
-                  className="px-2.5 py-1 text-xs rounded-lg bg-gray-800/80 hover:bg-purple-600/30 hover:border-purple-500/40 border border-gray-700/60 text-gray-300 hover:text-white transition-all duration-150"
-                  title={sample.desc}
-                >
-                  {sample.name}
-                </button>
-              ))}
+    <header className="sticky top-0 z-50 w-full bg-[#070510]/80 backdrop-blur-xl border-b border-white/5 transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-6">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-purple-400 p-[1.5px] shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
+            <div className="w-full h-full bg-[#070510] rounded-[9px] flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-purple-300" />
             </div>
           </div>
-        )}
+          <span className="text-xl font-extrabold text-white tracking-tight">
+            PixelCraft <span className="font-light text-purple-400">Studio</span>
+          </span>
+        </Link>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2">
-          {/* Mobile Navigation Button */}
+        {/* Clean Menu Navigation Links */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
           <Link
-            href={pathname === "/" ? "/studio" : "/"}
-            className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-purple-900/40 text-purple-300 border border-purple-500/30 text-xs font-medium"
+            href="/"
+            className={`transition-colors hover:text-white ${
+              pathname === "/" ? "text-white font-semibold" : "text-gray-400"
+            }`}
           >
-            {pathname === "/" ? "Toolkit Studio" : "Home"}
+            Home
           </Link>
+          <Link
+            href="/studio"
+            className={`transition-colors hover:text-white ${
+              pathname === "/studio" ? "text-purple-300 font-semibold" : "text-gray-400"
+            }`}
+          >
+            Toolkit Studio
+          </Link>
+          <Link
+            href="/editor"
+            className={`transition-colors hover:text-white ${
+              pathname === "/editor" ? "text-purple-300 font-semibold" : "text-gray-400"
+            }`}
+          >
+            Pro Color Editor
+          </Link>
+          <span className="text-gray-500 hover:text-gray-300 cursor-pointer transition-colors">
+            Features
+          </span>
+          <span className="text-gray-500 hover:text-gray-300 cursor-pointer transition-colors flex items-center gap-1">
+            Privacy <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          </span>
+        </nav>
+
+        {/* Action Button & Tool Control Shortcuts */}
+        <div className="flex items-center gap-3">
+          {/* Quick Sample Selector (Visible on Studio & Editor pages) */}
+          {pathname !== "/" && (
+            <div className="hidden lg:flex items-center gap-2 mr-2">
+              <span className="text-xs text-gray-400 flex items-center gap-1">
+                <ImageIcon className="w-3.5 h-3.5 text-purple-400" /> Sample:
+              </span>
+              <div className="flex items-center gap-1.5">
+                {SAMPLE_IMAGES.map((sample) => (
+                  <button
+                    key={sample.name}
+                    onClick={() => onSelectSample(sample.url, sample.name)}
+                    className="px-2.5 py-1 text-xs rounded-full bg-white/5 hover:bg-purple-600/30 border border-white/10 text-gray-300 hover:text-white transition-all duration-150"
+                    title={sample.desc}
+                  >
+                    {sample.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {hasImage && pathname !== "/" && (
             <button
               onClick={onReset}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white bg-gray-800/80 hover:bg-gray-700/80 rounded-lg border border-gray-700/60 transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-full border border-white/10 transition-colors"
               title="Reset all filter parameters"
             >
               <RotateCcw className="w-3.5 h-3.5 text-gray-400" />
@@ -141,19 +123,27 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {pathname !== "/" && (
+          {pathname !== "/" ? (
             <button
               onClick={onExport}
               disabled={!hasImage}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold shadow-lg transition-all duration-200 ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold shadow-xl transition-all duration-200 ${
                 hasImage
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02] active:scale-[0.98]"
-                  : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700/40"
+                  ? "bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600 hover:from-purple-400 hover:to-indigo-400 text-white shadow-purple-500/25 hover:scale-[1.03] active:scale-[0.98]"
+                  : "bg-gray-900 text-gray-600 cursor-not-allowed border border-white/5"
               }`}
             >
               <Download className="w-4 h-4" />
               Export Photo
             </button>
+          ) : (
+            <Link
+              href="/studio"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-500 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-xl shadow-purple-500/20 hover:shadow-purple-500/40 hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              <span>Launch Studio</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </Link>
           )}
         </div>
       </div>

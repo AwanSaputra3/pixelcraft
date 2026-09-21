@@ -41,13 +41,18 @@ export function applyEnhance(
   const outputImageData = new ImageData(width, height);
   const dst = outputImageData.data;
 
-  // Pre-calculate lookup coefficients
-  const bMult = options.brightness / 100;
+  const bMult = (options.brightness / 100) * 255;
   const cFactor = (259 * (options.contrast * 2.55 + 255)) / (255 * (259 - options.contrast * 2.55));
   const satMult = (options.saturation + 100) / 100;
-  const warmthVal = options.warmth;
+  const warmthVal = options.warmth * 0.8;
   const expMult = Math.pow(2, options.exposure / 50);
   const vibranceVal = options.vibrance / 100;
+
+  const hasExposure = options.exposure !== 0;
+  const hasBrightness = options.brightness !== 0;
+  const hasContrast = options.contrast !== 0;
+  const hasWarmth = warmthVal !== 0;
+  const hasSatOrVib = options.saturation !== 0 || options.vibrance !== 0;
 
   // Process color channels
   for (let i = 0; i < src.length; i += 4) {
@@ -57,48 +62,46 @@ export function applyEnhance(
     const a = src[i + 3];
 
     // 1. Exposure
-    if (options.exposure !== 0) {
+    if (hasExposure) {
       r *= expMult;
       g *= expMult;
       b *= expMult;
     }
 
     // 2. Brightness
-    if (options.brightness !== 0) {
-      r += bMult * 255;
-      g += bMult * 255;
-      b += bMult * 255;
+    if (hasBrightness) {
+      r += bMult;
+      g += bMult;
+      b += bMult;
     }
 
     // 3. Contrast
-    if (options.contrast !== 0) {
+    if (hasContrast) {
       r = cFactor * (r - 128) + 128;
       g = cFactor * (g - 128) + 128;
       b = cFactor * (b - 128) + 128;
     }
 
     // 4. Warmth (Temperature)
-    if (warmthVal !== 0) {
-      r += warmthVal * 0.8;
-      b -= warmthVal * 0.8;
+    if (hasWarmth) {
+      r += warmthVal;
+      b -= warmthVal;
     }
 
     // 5. Saturation & Vibrance
-    if (options.saturation !== 0 || options.vibrance !== 0) {
+    if (hasSatOrVib) {
       const gray = 0.2989 * r + 0.5870 * g + 0.1140 * b;
       
-      // Basic Saturation
       if (options.saturation !== 0) {
         r = gray + (r - gray) * satMult;
         g = gray + (g - gray) * satMult;
         b = gray + (b - gray) * satMult;
       }
 
-      // Vibrance (selective boost for low-saturated pixels)
       if (options.vibrance !== 0) {
-        const max = Math.max(r, g, b);
-        const avg = (r + g + b) / 3;
-        const amt = ((Math.abs(max - avg) * 2) / 255) * vibranceVal;
+        const max = r > g ? (r > b ? r : b) : (g > b ? g : b);
+        const avg = (r + g + b) * 0.333333;
+        const amt = ((Math.abs(max - avg) * 2) * 0.00392156) * vibranceVal;
         r += (max - r) * amt;
         g += (max - g) * amt;
         b += (max - b) * amt;
@@ -106,9 +109,9 @@ export function applyEnhance(
     }
 
     // Clamp values
-    dst[i] = Math.min(255, Math.max(0, r));
-    dst[i + 1] = Math.min(255, Math.max(0, g));
-    dst[i + 2] = Math.min(255, Math.max(0, b));
+    dst[i] = r < 0 ? 0 : r > 255 ? 255 : r;
+    dst[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
+    dst[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
     dst[i + 3] = a;
   }
 
@@ -132,26 +135,30 @@ function applySharpnessKernel(
   const src = new Uint8ClampedArray(imageData.data);
   const dst = imageData.data;
   
-  // 3x3 Sharpen Kernel:
-  //  0, -1,  0
-  // -1,  5, -1
-  //  0, -1,  0
   const centerWeight = 1 + 4 * intensity;
   const edgeWeight = -intensity;
 
   for (let y = 1; y < height - 1; y++) {
+    const yWidth = y * width;
+    const yPrevWidth = (y - 1) * width;
+    const yNextWidth = (y + 1) * width;
+
     for (let x = 1; x < width - 1; x++) {
-      const idx = (y * width + x) * 4;
+      const idx = (yWidth + x) * 4;
+      const topIdx = (yPrevWidth + x) * 4;
+      const botIdx = (yNextWidth + x) * 4;
+      const leftIdx = (yWidth + x - 1) * 4;
+      const rightIdx = (yWidth + x + 1) * 4;
 
       for (let c = 0; c < 3; c++) {
-        const top = src[((y - 1) * width + x) * 4 + c];
-        const bottom = src[((y + 1) * width + x) * 4 + c];
-        const left = src[(y * width + (x - 1)) * 4 + c];
-        const right = src[(y * width + (x + 1)) * 4 + c];
+        const top = src[topIdx + c];
+        const bottom = src[botIdx + c];
+        const left = src[leftIdx + c];
+        const right = src[rightIdx + c];
         const center = src[idx + c];
 
         const val = center * centerWeight + (top + bottom + left + right) * edgeWeight;
-        dst[idx + c] = Math.min(255, Math.max(0, val));
+        dst[idx + c] = val < 0 ? 0 : val > 255 ? 255 : val;
       }
     }
   }
@@ -185,3 +192,4 @@ export function computeHistogram(imageData: ImageData): HistogramData {
 
   return { r, g, b, maxCount };
 }
+

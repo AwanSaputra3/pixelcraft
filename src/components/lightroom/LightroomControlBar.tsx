@@ -2,18 +2,16 @@
 
 import React from "react";
 import {
-  Sun,
-  Palette,
-  Sparkles,
-  Sliders,
-  Crop,
-  RotateCcw,
-  RotateCw,
-  FlipHorizontal,
-  FlipVertical,
-  Wand2,
-  Layers,
-} from "lucide-react";
+  SunIcon,
+  SwatchIcon,
+  SparklesIcon,
+  AdjustmentsHorizontalIcon,
+  ScissorsIcon,
+  ArrowPathIcon,
+  ArrowsRightLeftIcon,
+  ArrowsUpDownIcon,
+  Square3Stack3DIcon,
+} from "@heroicons/react/24/outline";
 import { LightroomOptions, HslColorName, HslChannel, LIGHTROOM_PRESETS, LightroomPreset } from "../../lib/lightroomEngine";
 import { HslMixer } from "./HslMixer";
 import { PresetsPanel } from "./PresetsPanel";
@@ -41,13 +39,13 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
   onResetOptions,
 }) => {
   const tabs = [
-    { id: "presets", label: "Presets", icon: Wand2 },
-    { id: "light", label: "Light", icon: Sun },
-    { id: "color", label: "Color", icon: Palette },
-    { id: "effects", label: "Effects", icon: Sparkles },
-    { id: "detail", label: "Detail", icon: Sliders },
-    { id: "masking", label: "Masking", icon: Layers },
-    { id: "crop", label: "Crop & Rotate", icon: Crop },
+    { id: "presets", label: "Presets", icon: SparklesIcon },
+    { id: "light", label: "Light", icon: SunIcon },
+    { id: "color", label: "Color", icon: SwatchIcon },
+    { id: "effects", label: "Effects", icon: SparklesIcon },
+    { id: "detail", label: "Detail", icon: AdjustmentsHorizontalIcon },
+    { id: "masking", label: "Masking", icon: Square3Stack3DIcon },
+    { id: "crop", label: "Crop & Rotate", icon: ScissorsIcon },
   ] as const;
 
   const handleChangeField = <K extends keyof LightroomOptions>(key: K, value: LightroomOptions[K]) => {
@@ -81,9 +79,9 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
   };
 
   return (
-    <div className="w-full glass-card rounded-2xl border border-gray-800 p-4 flex flex-col gap-5">
-      {/* Lightroom Navigation Tabs */}
-      <div className="flex items-center justify-between border-b border-gray-800 pb-3 gap-1 overflow-x-auto">
+    <div className="w-full glass-card-fintech p-5 flex flex-col gap-5">
+      {/* Lightroom Navigation Tabs with Sliding Animated Pill */}
+      <div className="flex items-center justify-between border-b border-neutral-800 pb-3.5 gap-1.5 overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -91,10 +89,10 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as LightroomTab)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 shrink-0 ${
+              className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold transition-all duration-300 shrink-0 active:scale-95 z-10 cursor-pointer ${
                 isActive
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20"
-                  : "bg-gray-900/60 hover:bg-gray-800/80 text-gray-400 hover:text-gray-200 border border-gray-800/80"
+                  ? "text-black bg-[#ff47ff] shadow-lg shadow-[#ff47ff]/25"
+                  : "text-neutral-400 hover:text-white bg-[#121212] border border-neutral-800"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -104,29 +102,34 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
         })}
       </div>
 
-      {/* Panel 1: PRESETS */}
-      {activeTab === "presets" && (
-        <PresetsPanel activePresetId={activePresetId} onSelectPreset={onSelectPreset} />
-      )}
+      {/* Animated Panel Container */}
+      <div
+        key={activeTab}
+        className="flex flex-col gap-4 animate-tab-fade"
+      >
+        {/* Panel 1: PRESETS */}
+        {activeTab === "presets" && (
+          <PresetsPanel activePresetId={activePresetId} onSelectPreset={onSelectPreset} />
+        )}
 
-      {/* Panel 2: LIGHT (Tone Curve Adjustments) */}
-      {activeTab === "light" && (
-        <div className="flex flex-col gap-4 animate-fade-in">
+        {/* Panel 2: LIGHT (Tone Curve Adjustments) */}
+        {activeTab === "light" && (
+          <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Sun className="w-4 h-4 text-purple-400" /> Exposure & Tonal Curve Controls
+              <SunIcon className="w-4 h-4 text-[#ffc13c]" /> Exposure & Tonal Curve Controls
             </h4>
-            <button onClick={onResetOptions} className="text-[11px] text-gray-400 hover:text-white flex items-center gap-1">
-              <RotateCcw className="w-3 h-3" /> Reset Controls
+            <button onClick={onResetOptions} className="text-[11px] text-neutral-400 hover:text-white flex items-center gap-1 transition-colors">
+              <ArrowPathIcon className="w-3 h-3" /> Reset Controls
             </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Exposure */}
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Exposure</span>
-                <span className="font-mono text-purple-400 font-bold">{options.exposure}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.exposure}</span>
               </div>
               <input
                 type="range"
@@ -134,15 +137,15 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.exposure}
                 onChange={(e) => handleChangeField("exposure", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             {/* Contrast */}
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Contrast</span>
-                <span className="font-mono text-purple-400 font-bold">{options.contrast}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.contrast}</span>
               </div>
               <input
                 type="range"
@@ -150,15 +153,15 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.contrast}
                 onChange={(e) => handleChangeField("contrast", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             {/* Highlights */}
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Highlights</span>
-                <span className="font-mono text-purple-400 font-bold">{options.highlights}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.highlights}</span>
               </div>
               <input
                 type="range"
@@ -166,15 +169,15 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.highlights}
                 onChange={(e) => handleChangeField("highlights", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             {/* Shadows */}
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Shadows</span>
-                <span className="font-mono text-purple-400 font-bold">{options.shadows}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.shadows}</span>
               </div>
               <input
                 type="range"
@@ -182,15 +185,15 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.shadows}
                 onChange={(e) => handleChangeField("shadows", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             {/* Whites */}
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Whites</span>
-                <span className="font-mono text-purple-400 font-bold">{options.whites}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.whites}</span>
               </div>
               <input
                 type="range"
@@ -198,15 +201,15 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.whites}
                 onChange={(e) => handleChangeField("whites", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             {/* Blacks */}
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Blacks</span>
-                <span className="font-mono text-purple-400 font-bold">{options.blacks}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.blacks}</span>
               </div>
               <input
                 type="range"
@@ -214,7 +217,7 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.blacks}
                 onChange={(e) => handleChangeField("blacks", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
           </div>
@@ -223,21 +226,21 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
 
       {/* Panel 3: COLOR & HSL */}
       {activeTab === "color" && (
-        <div className="flex flex-col gap-4 animate-fade-in">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Palette className="w-4 h-4 text-purple-400" /> Color Balance & HSL Target Channels
+              <SwatchIcon className="w-4 h-4 text-[#ff47ff]" /> Color Balance & HSL Target Channels
             </h4>
-            <button onClick={onResetOptions} className="text-[11px] text-gray-400 hover:text-white flex items-center gap-1">
-              <RotateCcw className="w-3 h-3" /> Reset
+            <button onClick={onResetOptions} className="text-[11px] text-neutral-400 hover:text-white flex items-center gap-1 transition-colors">
+              <ArrowPathIcon className="w-3 h-3" /> Reset
             </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Temp (Warmth)</span>
-                <span className="font-mono text-purple-400 font-bold">{options.temperature}</span>
+                <span className="font-mono text-[#ffc13c] font-bold">{options.temperature}</span>
               </div>
               <input
                 type="range"
@@ -245,14 +248,14 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.temperature}
                 onChange={(e) => handleChangeField("temperature", parseInt(e.target.value))}
-                className="w-full accent-amber-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ffc13c] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Tint (Magenta/Green)</span>
-                <span className="font-mono text-purple-400 font-bold">{options.tint}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.tint}</span>
               </div>
               <input
                 type="range"
@@ -260,14 +263,14 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.tint}
                 onChange={(e) => handleChangeField("tint", parseInt(e.target.value))}
-                className="w-full accent-pink-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Vibrance</span>
-                <span className="font-mono text-purple-400 font-bold">{options.vibrance}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.vibrance}</span>
               </div>
               <input
                 type="range"
@@ -275,14 +278,14 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.vibrance}
                 onChange={(e) => handleChangeField("vibrance", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Saturation</span>
-                <span className="font-mono text-purple-400 font-bold">{options.saturation}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.saturation}</span>
               </div>
               <input
                 type="range"
@@ -290,7 +293,7 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.saturation}
                 onChange={(e) => handleChangeField("saturation", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
           </div>
@@ -305,21 +308,21 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
 
       {/* Panel 4: EFFECTS */}
       {activeTab === "effects" && (
-        <div className="flex flex-col gap-4 animate-fade-in">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-purple-400" /> Texture, Clarity & Vignette
+              <SparklesIcon className="w-4 h-4 text-[#bd99f8]" /> Texture, Clarity & Vignette
             </h4>
-            <button onClick={onResetOptions} className="text-[11px] text-gray-400 hover:text-white flex items-center gap-1">
-              <RotateCcw className="w-3 h-3" /> Reset
+            <button onClick={onResetOptions} className="text-[11px] text-neutral-400 hover:text-white flex items-center gap-1 transition-colors">
+              <ArrowPathIcon className="w-3 h-3" /> Reset
             </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Texture</span>
-                <span className="font-mono text-purple-400 font-bold">{options.texture}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.texture}</span>
               </div>
               <input
                 type="range"
@@ -327,14 +330,14 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.texture}
                 onChange={(e) => handleChangeField("texture", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Clarity</span>
-                <span className="font-mono text-purple-400 font-bold">{options.clarity}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.clarity}</span>
               </div>
               <input
                 type="range"
@@ -342,14 +345,14 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.clarity}
                 onChange={(e) => handleChangeField("clarity", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Dehaze</span>
-                <span className="font-mono text-purple-400 font-bold">{options.dehaze}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.dehaze}</span>
               </div>
               <input
                 type="range"
@@ -357,14 +360,14 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.dehaze}
                 onChange={(e) => handleChangeField("dehaze", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Vignette Amount</span>
-                <span className="font-mono text-purple-400 font-bold">{options.vignette}</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.vignette}</span>
               </div>
               <input
                 type="range"
@@ -372,14 +375,14 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.vignette}
                 onChange={(e) => handleChangeField("vignette", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             <div className="flex flex-col gap-1.5 sm:col-span-2">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Vintage Film Grain</span>
-                <span className="font-mono text-purple-400 font-bold">{options.grain}%</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.grain}%</span>
               </div>
               <input
                 type="range"
@@ -387,7 +390,7 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.grain}
                 onChange={(e) => handleChangeField("grain", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
           </div>
@@ -396,21 +399,21 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
 
       {/* Panel 5: DETAIL */}
       {activeTab === "detail" && (
-        <div className="flex flex-col gap-4 animate-fade-in">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Sliders className="w-4 h-4 text-purple-400" /> Detail & Sharpening
+              <AdjustmentsHorizontalIcon className="w-4 h-4 text-[#64ed68]" /> Detail & Sharpening
             </h4>
-            <button onClick={onResetOptions} className="text-[11px] text-gray-400 hover:text-white flex items-center gap-1">
-              <RotateCcw className="w-3 h-3" /> Reset
+            <button onClick={onResetOptions} className="text-[11px] text-neutral-400 hover:text-white flex items-center gap-1 transition-colors">
+              <ArrowPathIcon className="w-3 h-3" /> Reset
             </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Sharpening Amount</span>
-                <span className="font-mono text-purple-400 font-bold">{options.sharpening}%</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.sharpening}%</span>
               </div>
               <input
                 type="range"
@@ -418,14 +421,14 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.sharpening}
                 onChange={(e) => handleChangeField("sharpening", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-xs text-gray-300">
+              <div className="flex justify-between text-xs text-neutral-300">
                 <span>Luminance Noise Reduction</span>
-                <span className="font-mono text-purple-400 font-bold">{options.noiseReduction}%</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{options.noiseReduction}%</span>
               </div>
               <input
                 type="range"
@@ -433,7 +436,7 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 max="100"
                 value={options.noiseReduction}
                 onChange={(e) => handleChangeField("noiseReduction", parseInt(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
           </div>
@@ -447,18 +450,18 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
 
       {/* Panel 7: CROP & ROTATE */}
       {activeTab === "crop" && (
-        <div className="flex flex-col gap-4 animate-fade-in">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Crop className="w-4 h-4 text-purple-400" /> Crop & Geometry Transform
+              <ScissorsIcon className="w-4 h-4 text-[#ffc13c]" /> Crop & Geometry Transform
             </h4>
-            <button onClick={onResetOptions} className="text-[11px] text-gray-400 hover:text-white flex items-center gap-1">
-              <RotateCcw className="w-3 h-3" /> Reset
+            <button onClick={onResetOptions} className="text-[11px] text-neutral-400 hover:text-white flex items-center gap-1 transition-colors">
+              <ArrowPathIcon className="w-3 h-3" /> Reset
             </button>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-gray-300">Aspect Ratio Preset</label>
+            <label className="text-xs text-neutral-300 font-medium">Aspect Ratio Preset</label>
             <div className="grid grid-cols-5 gap-1.5">
               {[
                 { id: "free", label: "Free" },
@@ -470,10 +473,10 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
                 <button
                   key={a.id}
                   onClick={() => handleChangeField("aspectRatio", a.id as any)}
-                  className={`py-1.5 rounded-lg border text-[11px] font-semibold transition-all ${
+                  className={`py-1.5 rounded-full border text-[11px] font-semibold transition-all ${
                     options.aspectRatio === a.id
-                      ? "bg-purple-600 border-purple-500 text-white"
-                      : "bg-gray-900 border-gray-800 text-gray-400 hover:text-gray-200"
+                      ? "bg-[#ff47ff] border-[#ff47ff] text-black"
+                      : "bg-[#121212] border-neutral-800 text-neutral-400 hover:text-white"
                   }`}
                 >
                   {a.label}
@@ -485,49 +488,49 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button
               onClick={() => handleChangeField("flipH", !options.flipH)}
-              className={`flex items-center justify-center gap-1.5 p-2 rounded-xl border text-xs font-medium transition-colors ${
+              className={`flex items-center justify-center gap-1.5 p-2.5 rounded-2xl border text-xs font-medium transition-colors ${
                 options.flipH
-                  ? "bg-purple-600 border-purple-500 text-white"
-                  : "bg-gray-900 border-gray-800 text-gray-300 hover:text-white"
+                  ? "bg-[#ff47ff] border-[#ff47ff] text-black font-semibold"
+                  : "bg-[#121212] border-neutral-800 text-neutral-300 hover:text-white"
               }`}
             >
-              <FlipHorizontal className="w-4 h-4" /> Flip Horiz
+              <ArrowsRightLeftIcon className="w-4 h-4" /> Flip Horiz
             </button>
 
             <button
               onClick={() => handleChangeField("flipV", !options.flipV)}
-              className={`flex items-center justify-center gap-1.5 p-2 rounded-xl border text-xs font-medium transition-colors ${
+              className={`flex items-center justify-center gap-1.5 p-2.5 rounded-2xl border text-xs font-medium transition-colors ${
                 options.flipV
-                  ? "bg-purple-600 border-purple-500 text-white"
-                  : "bg-gray-900 border-gray-800 text-gray-300 hover:text-white"
+                  ? "bg-[#ff47ff] border-[#ff47ff] text-black font-semibold"
+                  : "bg-[#121212] border-neutral-800 text-neutral-300 hover:text-white"
               }`}
             >
-              <FlipVertical className="w-4 h-4" /> Flip Vert
+              <ArrowsUpDownIcon className="w-4 h-4" /> Flip Vert
             </button>
 
             <button
               onClick={() =>
                 handleChangeField("rotationAngle", (options.rotationAngle - 90 + 360) % 360)
               }
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-gray-800 bg-gray-900 text-gray-300 hover:text-white text-xs font-medium transition-colors"
+              className="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl border border-neutral-800 bg-[#121212] text-neutral-300 hover:text-white text-xs font-medium transition-colors"
             >
-              <RotateCcw className="w-4 h-4" /> -90°
+              <ArrowPathIcon className="w-4 h-4" /> -90°
             </button>
 
             <button
               onClick={() =>
                 handleChangeField("rotationAngle", (options.rotationAngle + 90) % 360)
               }
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-gray-800 bg-gray-900 text-gray-300 hover:text-white text-xs font-medium transition-colors"
+              className="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl border border-neutral-800 bg-[#121212] text-neutral-300 hover:text-white text-xs font-medium transition-colors"
             >
-              <RotateCw className="w-4 h-4" /> +90°
+              <ArrowPathIcon className="w-4 h-4" /> +90°
             </button>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs text-gray-300">
+            <div className="flex justify-between text-xs text-neutral-300">
               <span>Straighten Angle</span>
-              <span className="font-mono text-purple-400 font-bold">{options.rotationAngle}°</span>
+              <span className="font-mono text-[#ff47ff] font-bold">{options.rotationAngle}°</span>
             </div>
             <input
               type="range"
@@ -535,11 +538,13 @@ export const LightroomControlBar: React.FC<LightroomControlBarProps> = ({
               max="45"
               value={options.rotationAngle > 180 ? options.rotationAngle - 360 : options.rotationAngle}
               onChange={(e) => handleChangeField("rotationAngle", parseInt(e.target.value))}
-              className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+              className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
             />
           </div>
         </div>
       )}
+        </div>
     </div>
   );
 };
+

@@ -6,6 +6,7 @@ import { Dropzone } from "../../components/Dropzone";
 import { LightroomCanvas } from "../../components/lightroom/LightroomCanvas";
 import { LightroomControlBar, LightroomTab } from "../../components/lightroom/LightroomControlBar";
 import { ExportModal } from "../../components/ExportModal";
+import { StudioSkeleton } from "../../components/StudioSkeleton";
 import {
   LightroomOptions,
   defaultLightroomOptions,
@@ -15,7 +16,6 @@ import {
 } from "../../lib/lightroomEngine";
 import { computeHistogram, HistogramData } from "../../lib/enhance";
 import { HistogramCanvas } from "../../components/HistogramCanvas";
-import { Sliders, RotateCcw, Download } from "lucide-react";
 
 interface QueueItem {
   id: string;
@@ -129,22 +129,91 @@ export default function LightroomEditorPage() {
     img.src = url;
   }, []);
 
-  // Sample Image Selector
-  const handleSelectSample = async (sampleUrl: string, sampleName: string) => {
+  // Sample Image Selector with robust fallback
+  const handleSelectSample = useCallback(async (sampleUrl: string, sampleName: string) => {
     setIsProcessing(true);
+
+    // Helper: generate a local gradient demo image as the ultimate fallback
+    const loadGradientFallback = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1200;
+      canvas.height = 800;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        const grad = ctx.createLinearGradient(0, 0, 1200, 800);
+        grad.addColorStop(0, "#0f2027");
+        grad.addColorStop(0.5, "#203a43");
+        grad.addColorStop(1, "#2c5364");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1200, 800);
+        ctx.fillStyle = "rgba(255, 71, 255, 0.4)";
+        ctx.beginPath();
+        ctx.arc(600, 400, 200, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "rgba(100, 200, 255, 0.25)";
+        ctx.beginPath();
+        ctx.arc(400, 300, 150, 0, Math.PI * 2);
+        ctx.fill();
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], "demo_sample.jpg", { type: "image/jpeg" });
+            loadImageFile(file);
+          }
+          setIsProcessing(false);
+        }, "image/jpeg");
+      } else {
+        setIsProcessing(false);
+      }
+    };
+
     try {
       const response = await fetch(sampleUrl);
+      if (!response.ok) throw new Error("HTTP error " + response.status);
       const blob = await response.blob();
       const file = new File([blob], `${sampleName.toLowerCase().replace(/\s+/g, "_")}.jpg`, {
         type: blob.type || "image/jpeg",
       });
       loadImageFile(file);
-    } catch (err) {
-      console.error("Failed to fetch sample photo:", err);
-    } finally {
       setIsProcessing(false);
+    } catch (err) {
+      console.warn("Fetch sample failed, falling back to direct Image loader:", err);
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const file = new File([blob], `${sampleName.toLowerCase().replace(/\s+/g, "_")}.jpg`, {
+                type: "image/jpeg",
+              });
+              loadImageFile(file);
+            }
+            setIsProcessing(false);
+          }, "image/jpeg");
+        } else {
+          setIsProcessing(false);
+        }
+      };
+      img.onerror = () => {
+        console.warn("Image direct load also failed, using gradient fallback");
+        loadGradientFallback();
+      };
+      img.src = sampleUrl;
     }
-  };
+  }, [loadImageFile]);
+
+  // Auto load initial demo sample photo on first load
+  useEffect(() => {
+    handleSelectSample(
+      "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1000&q=80",
+      "Low-Light Night"
+    );
+  }, [handleSelectSample]);
 
   const handleSelectQueueFile = (id: string) => {
     const item = fileQueue.find((f) => f.id === id);
@@ -267,7 +336,7 @@ export default function LightroomEditorPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#070510] starry-bg text-gray-100 selection:bg-purple-500 selection:text-white pb-12">
+    <div className="min-h-screen flex flex-col bg-[#121212] starry-bg text-white selection:bg-[#ff47ff] selection:text-black pb-12">
       {/* Header */}
       <Header
         onSelectSample={handleSelectSample}
@@ -319,6 +388,9 @@ export default function LightroomEditorPage() {
             </div>
           </div>
         )}
+
+        {/* 60 FPS Loading Skeleton Placeholder while image is loading or empty */}
+        {!originalUrl && <StudioSkeleton type="editor" />}
       </main>
 
       {/* Export Modal */}

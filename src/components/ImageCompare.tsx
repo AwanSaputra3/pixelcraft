@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { ZoomIn, ZoomOut, Maximize2, Split, Eye, Columns, Loader2, Sparkles, RefreshCw } from "lucide-react";
+import {
+  MagnifyingGlassPlusIcon,
+  MagnifyingGlassMinusIcon,
+  ArrowsPointingOutIcon,
+  ArrowsRightLeftIcon,
+  EyeIcon,
+  ViewColumnsIcon,
+  ArrowPathIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/outline";
+import { AnimeScanBeam } from "./AnimeScanBeam";
 
 interface ImageCompareProps {
   originalUrl: string;
@@ -110,108 +120,95 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
   return (
     <div className="w-full flex flex-col gap-3">
       {/* View & Zoom Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-1 bg-gray-900/60 rounded-xl border border-gray-800 text-xs text-gray-300">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-1.5 bg-[#1c1c1c] rounded-2xl border border-neutral-800 text-xs text-neutral-300">
         {/* Mode Selector Tabs */}
-        <div className="flex items-center gap-1 bg-gray-950 p-1 rounded-lg border border-gray-800">
-          <button
-            onClick={() => setViewMode("split")}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors ${
-              viewMode === "split" ? "bg-purple-600 text-white font-medium" : "text-gray-400 hover:text-gray-200"
-            }`}
-            title="Split Before/After Slider"
-          >
-            <Split className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Split</span>
-          </button>
-          <button
-            onClick={() => setViewMode("side")}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors ${
-              viewMode === "side" ? "bg-purple-600 text-white font-medium" : "text-gray-400 hover:text-gray-200"
-            }`}
-            title="Side-by-Side Dual View"
-          >
-            <Columns className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Side-by-Side</span>
-          </button>
-          <button
-            onClick={() => setViewMode("original")}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors ${
-              viewMode === "original" ? "bg-purple-600 text-white font-medium" : "text-gray-400 hover:text-gray-200"
-            }`}
-            title="Original Photo Only"
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Before</span>
-          </button>
-          <button
-            onClick={() => setViewMode("processed")}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors ${
-              viewMode === "processed" ? "bg-purple-600 text-white font-medium" : "text-gray-400 hover:text-gray-200"
-            }`}
-            title="Processed Photo Only"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">After</span>
-          </button>
+        <div className="flex items-center gap-1 bg-[#121212] p-1 rounded-xl border border-neutral-800 relative">
+          {[
+            { id: "split", label: "Split", icon: ArrowsRightLeftIcon, title: "Split Before/After Slider" },
+            { id: "side", label: "Side-by-Side", icon: ViewColumnsIcon, title: "Side-by-Side Dual View" },
+            { id: "original", label: "Before", icon: EyeIcon, title: "Original Photo Only" },
+            { id: "processed", label: "After", icon: SparklesIcon, title: "Processed Photo Only" },
+          ].map((mode) => {
+            const isActive = viewMode === mode.id;
+            const Icon = mode.icon;
+            return (
+              <button
+                key={mode.id}
+                onClick={() => setViewMode(mode.id as any)}
+                className={`relative flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold transition-all duration-300 active:scale-95 z-10 cursor-pointer ${
+                  isActive ? "text-black bg-[#ff47ff] shadow-sm" : "text-neutral-400 hover:text-white"
+                }`}
+                title={mode.title}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{mode.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Zoom Controls */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-gray-950 px-2 py-1 rounded-lg border border-gray-800">
+          <div className="flex items-center gap-1 bg-[#121212] px-2.5 py-1 rounded-xl border border-neutral-800">
             <button onClick={handleZoomOut} className="p-1 hover:text-white transition-colors" title="Zoom Out">
-              <ZoomOut className="w-3.5 h-3.5" />
+              <MagnifyingGlassMinusIcon className="w-3.5 h-3.5" />
             </button>
-            <span className="w-10 text-center font-mono text-[11px] text-purple-300">
+            <span className="w-10 text-center font-mono text-[11px] text-[#ff47ff] font-semibold">
               {Math.round(zoom * 100)}%
             </span>
             <button onClick={handleZoomIn} className="p-1 hover:text-white transition-colors" title="Zoom In">
-              <ZoomIn className="w-3.5 h-3.5" />
+              <MagnifyingGlassPlusIcon className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <button
             onClick={handleResetZoom}
-            className="p-1.5 rounded-lg bg-gray-950 hover:bg-gray-800 border border-gray-800 text-gray-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-full bg-[#121212] hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
             title="Reset Zoom & View"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <ArrowPathIcon className="w-3.5 h-3.5" />
           </button>
 
           <button
             onClick={toggleFullscreen}
-            className="p-1.5 rounded-lg bg-gray-950 hover:bg-gray-800 border border-gray-800 text-gray-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-full bg-[#121212] hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
             title="Toggle Fullscreen"
           >
-            <Maximize2 className="w-3.5 h-3.5" />
+            <ArrowsPointingOutIcon className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Canvas Canvas Preview Viewport */}
+      {/* Canvas Preview Viewport */}
       <div
         ref={containerRef}
         onMouseDown={handleMouseDownPan}
-        className={`relative w-full h-[480px] sm:h-[560px] rounded-2xl overflow-hidden border border-gray-800 checkerboard-bg select-none cursor-grab active:cursor-grabbing ${
+        className={`relative w-full h-[480px] sm:h-[560px] rounded-3xl overflow-hidden border border-neutral-800 checkerboard-bg select-none cursor-grab active:cursor-grabbing ${
           isFullscreen ? "h-screen rounded-none" : ""
         }`}
       >
+        {/* Anime.js Futuristic Laser Scan Beam */}
+        <AnimeScanBeam isScanning={isProcessing} />
+
         {/* Processing Indicator Overlay */}
         {isProcessing && (
-          <div className="absolute inset-0 z-30 bg-gray-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-fade-in">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-600 p-[2px] mb-4 animate-spin">
-              <div className="w-full h-full bg-[#090d16] rounded-[14px] flex items-center justify-center">
-                <Loader2 className="w-6 h-6 text-purple-400 animate-spin" />
+          <div className="absolute inset-0 z-30 bg-[#121212]/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#ff47ff] to-[#ffc13c] p-[2px] mb-4 animate-spin">
+              <div className="w-full h-full bg-[#121212] rounded-[14px] flex items-center justify-center">
+                <ArrowPathIcon className="w-6 h-6 text-[#ff47ff]" />
               </div>
             </div>
             <h4 className="text-sm font-semibold text-white mb-1">{processingProgressText}</h4>
-            <p className="text-xs text-gray-400">Processing locally in your browser...</p>
+            <p className="text-xs text-neutral-400">Processing locally in your browser...</p>
           </div>
         )}
 
         {/* View Mode: Split Comparison */}
         {viewMode === "split" && (
           <div
-            className="relative w-full h-full flex items-center justify-center transition-transform duration-75"
+            className={`relative w-full h-full flex items-center justify-center ${
+              isPanning ? "" : "transition-transform duration-300 ease-out"
+            }`}
             style={{
               transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
             }}
@@ -237,7 +234,7 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
 
             {/* Split Slider Line & Handle */}
             <div
-              className="absolute top-0 bottom-0 z-20 w-0.5 bg-gradient-to-b from-purple-400 via-pink-500 to-cyan-400 cursor-ew-resize shadow-[0_0_12px_rgba(168,85,247,0.8)]"
+              className="absolute top-0 bottom-0 z-20 w-0.5 bg-gradient-to-b from-[#ff47ff] via-[#bd99f8] to-[#ffc13c] cursor-ew-resize shadow-[0_0_12px_rgba(255,71,255,0.8)]"
               style={{ left: `${sliderPosition}%` }}
               onMouseDown={(e) => {
                 e.stopPropagation();
@@ -245,16 +242,16 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
               }}
               onTouchStart={() => setIsDragging(true)}
             >
-              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-pink-600 border-2 border-white flex items-center justify-center shadow-lg text-white">
-                <Split className="w-4 h-4" />
+              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#ff47ff] border-2 border-white flex items-center justify-center shadow-lg text-black">
+                <ArrowsRightLeftIcon className="w-4 h-4" />
               </div>
             </div>
 
             {/* Labels */}
-            <div className="absolute top-4 left-4 z-10 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md text-[11px] font-semibold text-white border border-white/10 pointer-events-none">
+            <div className="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md text-[11px] font-semibold text-white border border-white/10 pointer-events-none">
               BEFORE
             </div>
-            <div className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-md bg-purple-900/70 backdrop-blur-md text-[11px] font-semibold text-purple-200 border border-purple-500/30 pointer-events-none">
+            <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full bg-[#ff47ff]/20 backdrop-blur-md text-[11px] font-semibold text-[#ff47ff] border border-[#ff47ff]/40 pointer-events-none">
               AFTER
             </div>
           </div>
@@ -262,9 +259,9 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
 
         {/* View Mode: Side-by-Side */}
         {viewMode === "side" && (
-          <div className="w-full h-full grid grid-cols-2 gap-1 p-2">
-            <div className="relative w-full h-full rounded-xl overflow-hidden border border-gray-800/80 flex items-center justify-center bg-gray-950/40">
-              <span className="absolute top-3 left-3 z-10 px-2 py-0.5 rounded bg-black/70 text-[10px] text-gray-300 font-medium">
+          <div className="w-full h-full grid grid-cols-2 gap-2 p-2">
+            <div className="relative w-full h-full rounded-2xl overflow-hidden border border-neutral-800 flex items-center justify-center bg-[#121212]/50">
+              <span className="absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-full bg-black/70 text-[10px] text-neutral-300 font-medium">
                 BEFORE
               </span>
               <img
@@ -274,8 +271,8 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
                 style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }}
               />
             </div>
-            <div className="relative w-full h-full rounded-xl overflow-hidden border border-purple-900/50 flex items-center justify-center bg-purple-950/20">
-              <span className="absolute top-3 left-3 z-10 px-2 py-0.5 rounded bg-purple-900/80 text-[10px] text-purple-200 font-medium">
+            <div className="relative w-full h-full rounded-2xl overflow-hidden border border-[#ff47ff]/30 flex items-center justify-center bg-[#ff47ff]/5">
+              <span className="absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-full bg-[#ff47ff]/20 text-[10px] text-[#ff47ff] font-medium border border-[#ff47ff]/30">
                 AFTER
               </span>
               <img
@@ -291,7 +288,7 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
         {/* View Mode: Original Only */}
         {viewMode === "original" && (
           <div className="w-full h-full flex items-center justify-center p-4">
-            <span className="absolute top-4 left-4 z-10 px-2.5 py-1 rounded-md bg-black/70 text-xs text-white font-medium">
+            <span className="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-black/70 text-xs text-white font-medium">
               BEFORE (ORIGINAL)
             </span>
             <img
@@ -306,7 +303,7 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
         {/* View Mode: Processed Only */}
         {viewMode === "processed" && (
           <div className="w-full h-full flex items-center justify-center p-4">
-            <span className="absolute top-4 left-4 z-10 px-2.5 py-1 rounded-md bg-purple-900/80 text-xs text-purple-200 font-medium">
+            <span className="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-[#ff47ff]/20 border border-[#ff47ff]/40 text-xs text-[#ff47ff] font-medium">
               AFTER (PROCESSED)
             </span>
             <img
@@ -321,3 +318,4 @@ export const ImageCompare: React.FC<ImageCompareProps> = ({
     </div>
   );
 };
+

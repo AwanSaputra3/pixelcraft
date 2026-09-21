@@ -24,7 +24,7 @@ export const HistogramCanvas: React.FC<HistogramCanvasProps> = ({ histogram, hei
     ctx.clearRect(0, 0, width, h);
 
     // Background dark fill
-    ctx.fillStyle = "#0c121e";
+    ctx.fillStyle = "#121212";
     ctx.fillRect(0, 0, width, h);
 
     const { r, g, b, maxCount } = histogram;
@@ -62,19 +62,19 @@ export const HistogramCanvas: React.FC<HistogramCanvasProps> = ({ histogram, hei
 
   if (!histogram) {
     return (
-      <div className="w-full h-16 rounded-xl bg-gray-900/60 border border-gray-800 flex items-center justify-center text-xs text-gray-500">
+      <div className="w-full h-16 rounded-2xl bg-[#1c1c1c] border border-neutral-800 flex items-center justify-center text-xs text-neutral-500">
         Histogram data unavailable
       </div>
     );
   }
 
   return (
-    <div className="w-full rounded-xl overflow-hidden border border-gray-800/80 bg-[#0c121e] p-2">
-      <div className="flex items-center justify-between text-[10px] text-gray-400 mb-1 px-1">
-        <span>RGB Histogram Spectrum</span>
+    <div className="w-full rounded-2xl overflow-hidden border border-neutral-800 bg-[#1c1c1c] p-2.5">
+      <div className="flex items-center justify-between text-[10px] text-neutral-400 mb-1 px-1">
+        <span className="font-medium">RGB Histogram Spectrum</span>
         <div className="flex items-center gap-2 font-mono">
           <span className="text-red-400">● R</span>
-          <span className="text-emerald-400">● G</span>
+          <span className="text-[#64ed68]">● G</span>
           <span className="text-blue-400">● B</span>
         </div>
       </div>
@@ -82,7 +82,7 @@ export const HistogramCanvas: React.FC<HistogramCanvasProps> = ({ histogram, hei
         ref={canvasRef}
         width={256}
         height={height}
-        className="w-full h-[64px] rounded bg-[#0c121e]"
+        className="w-full h-[64px] rounded-xl bg-[#121212]"
       />
     </div>
   );

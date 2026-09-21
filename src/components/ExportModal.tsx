@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Download, Copy, Check, FileImage, Sparkles } from "lucide-react";
+import {
+  XMarkIcon,
+  ArrowDownTrayIcon,
+  ClipboardDocumentIcon,
+  CheckIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/outline";
 import confetti from "canvas-confetti";
 
 interface ExportModalProps {
@@ -32,13 +38,13 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   if (!isOpen) return null;
 
   const handleDownload = () => {
-    // Trigger confetti celebration
+    // Trigger confetti celebration with Picsart palette
     try {
       confetti({
         particleCount: 80,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ["#8b5cf6", "#ec4899", "#06b6d4"],
+        colors: ["#ff47ff", "#ffc13c", "#bd99f8", "#64ed68"],
       });
     } catch (e) {
       console.log(e);
@@ -104,28 +110,28 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
-      <div className="relative w-full max-w-lg glass-panel rounded-2xl border border-gray-800 p-6 flex flex-col gap-5 shadow-2xl">
+      <div className="relative w-full max-w-lg glass-panel rounded-3xl border border-neutral-800 p-6 flex flex-col gap-5 shadow-2xl animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+        <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-purple-600/20 text-purple-400 border border-purple-500/30">
-              <Sparkles className="w-5 h-5" />
+            <div className="p-2 rounded-xl bg-[#ff47ff]/20 text-[#ff47ff] border border-[#ff47ff]/30">
+              <SparklesIcon className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white">Export Processed Image</h3>
-              <p className="text-xs text-gray-400">Save to your device or copy to clipboard</p>
+              <p className="text-xs text-neutral-400">Save to your device or copy to clipboard</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+            className="p-1.5 rounded-full text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <XMarkIcon className="w-5 h-5" />
           </button>
         </div>
 
         {/* Thumbnail Preview */}
-        <div className="w-full h-44 rounded-xl border border-gray-800 checkerboard-bg flex items-center justify-center overflow-hidden">
+        <div className="w-full h-44 rounded-2xl border border-neutral-800 checkerboard-bg flex items-center justify-center overflow-hidden">
           <img src={imageDataUrl} alt="Export preview" className="max-w-full max-h-full object-contain" />
         </div>
 
@@ -133,18 +139,18 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         <div className="flex flex-col gap-4 text-xs">
           {/* File Name */}
           <div className="flex flex-col gap-1">
-            <label className="text-gray-300 font-medium">File Name</label>
+            <label className="text-neutral-300 font-medium">File Name</label>
             <input
               type="text"
               value={fileName}
               onChange={(e) => setFileName(e.target.value)}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500 font-mono"
+              className="w-full bg-[#121212] border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#ff47ff] font-mono"
             />
           </div>
 
           {/* Format Selection */}
           <div className="flex flex-col gap-1">
-            <label className="text-gray-300 font-medium">Export Format</label>
+            <label className="text-neutral-300 font-medium">Export Format</label>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { id: "png", label: "PNG (Lossless & Alpha)" },
@@ -154,10 +160,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                 <button
                   key={f.id}
                   onClick={() => setFormat(f.id as any)}
-                  className={`px-3 py-2 rounded-lg border font-semibold transition-all ${
+                  className={`px-3 py-2 rounded-full border font-semibold transition-all ${
                     format === f.id
-                      ? "bg-purple-600 border-purple-500 text-white"
-                      : "bg-gray-900 border-gray-800 text-gray-400 hover:text-gray-200"
+                      ? "bg-[#ff47ff] border-[#ff47ff] text-black"
+                      : "bg-[#121212] border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
                   }`}
                 >
                   {f.label.split(" ")[0]}
@@ -168,10 +174,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
           {/* Quality Slider (for JPG & WebP) */}
           {format !== "png" && (
-            <div className="flex flex-col gap-1.5 bg-gray-950 p-2.5 rounded-lg border border-gray-800">
-              <div className="flex justify-between text-gray-300">
+            <div className="flex flex-col gap-1.5 bg-[#121212] p-3 rounded-2xl border border-neutral-800">
+              <div className="flex justify-between text-neutral-300">
                 <span>Output Quality</span>
-                <span className="font-mono text-purple-400 font-bold">{Math.round(quality * 100)}%</span>
+                <span className="font-mono text-[#ff47ff] font-bold">{Math.round(quality * 100)}%</span>
               </div>
               <input
                 type="range"
@@ -180,43 +186,44 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                 step="0.05"
                 value={quality}
                 onChange={(e) => setQuality(parseFloat(e.target.value))}
-                className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#ff47ff] h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
               />
             </div>
           )}
 
           {/* Dimensions Info */}
-          <div className="flex justify-between text-gray-400 text-[11px] px-1">
+          <div className="flex justify-between text-neutral-400 text-[11px] px-1">
             <span>Dimensions: {width} × {height}px</span>
             <span>Client-Side Generation</span>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center gap-3 pt-2 border-t border-gray-800">
+        <div className="flex items-center gap-3 pt-2 border-t border-neutral-800">
           <button
             onClick={handleCopyClipboard}
-            className="flex-1 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors"
+            className="flex-1 py-2.5 rounded-full bg-[#1c1c1c] hover:bg-neutral-800 border border-neutral-700 text-neutral-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors"
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4 text-emerald-400" /> Copied!
+                <CheckIcon className="w-4 h-4 text-[#64ed68]" /> Copied!
               </>
             ) : (
               <>
-                <Copy className="w-4 h-4 text-gray-400" /> Copy to Clipboard
+                <ClipboardDocumentIcon className="w-4 h-4 text-neutral-400" /> Copy to Clipboard
               </>
             )}
           </button>
 
           <button
             onClick={handleDownload}
-            className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xs shadow-lg shadow-purple-500/20 flex items-center justify-center gap-1.5 transition-all"
+            className="flex-1 py-2.5 rounded-full bg-[#ff47ff] hover:bg-[#e035e0] text-black font-semibold text-xs shadow-lg shadow-[#ff47ff]/25 flex items-center justify-center gap-1.5 transition-all"
           >
-            <Download className="w-4 h-4" /> Download Photo
+            <ArrowDownTrayIcon className="w-4 h-4" /> Download Photo
           </button>
         </div>
       </div>
     </div>
   );
 };
+

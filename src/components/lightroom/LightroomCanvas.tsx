@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { ZoomIn, ZoomOut, RefreshCw, Maximize2, Eye, EyeOff, Crop as CropIcon } from "lucide-react";
+import {
+  MagnifyingGlassPlusIcon,
+  MagnifyingGlassMinusIcon,
+  ArrowPathIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from "@heroicons/react/24/outline";
 import { LightroomOptions } from "../../lib/lightroomEngine";
 
 interface LightroomCanvasProps {
@@ -68,7 +74,7 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
   return (
     <div className="w-full flex flex-col gap-3">
       {/* Top View Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-1 bg-gray-900/60 rounded-xl border border-gray-800 text-xs text-gray-300">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-1.5 bg-[#1c1c1c] rounded-2xl border border-neutral-800 text-xs text-neutral-300">
         {/* Press & Hold Before/After Button */}
         <button
           onMouseDown={() => setShowOriginal(true)}
@@ -76,43 +82,43 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
           onMouseLeave={() => setShowOriginal(false)}
           onTouchStart={() => setShowOriginal(true)}
           onTouchEnd={() => setShowOriginal(false)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-semibold text-xs transition-all select-none ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border font-semibold text-xs transition-all select-none ${
             showOriginal
-              ? "bg-amber-500 text-gray-950 border-amber-400 scale-105 shadow-md"
-              : "bg-gray-950 text-gray-300 hover:text-white border-gray-800"
+              ? "bg-[#ffc13c] text-black border-[#ffc13c] scale-105 shadow-md"
+              : "bg-[#121212] text-neutral-300 hover:text-white border-neutral-800"
           }`}
           title="Press & hold to see original photo"
         >
-          {showOriginal ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4 text-purple-400" />}
+          {showOriginal ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4 text-[#ff47ff]" />}
           <span>{showOriginal ? "BEFORE (ORIGINAL)" : "HOLD FOR BEFORE"}</span>
         </button>
 
         {/* Zoom & Pan Controls */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-gray-950 px-2 py-1 rounded-lg border border-gray-800">
+          <div className="flex items-center gap-1 bg-[#121212] px-2.5 py-1 rounded-xl border border-neutral-800">
             <button
               onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
               className="p-1 hover:text-white transition-colors"
             >
-              <ZoomOut className="w-3.5 h-3.5" />
+              <MagnifyingGlassMinusIcon className="w-3.5 h-3.5" />
             </button>
-            <span className="w-10 text-center font-mono text-[11px] text-purple-300">
+            <span className="w-10 text-center font-mono text-[11px] text-[#ff47ff] font-semibold">
               {Math.round(zoom * 100)}%
             </span>
             <button
               onClick={() => setZoom((z) => Math.min(4, z + 0.25))}
               className="p-1 hover:text-white transition-colors"
             >
-              <ZoomIn className="w-3.5 h-3.5" />
+              <MagnifyingGlassPlusIcon className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <button
             onClick={handleResetZoom}
-            className="p-1.5 rounded-lg bg-gray-950 hover:bg-gray-800 border border-gray-800 text-gray-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-full bg-[#121212] hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
             title="Reset View"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <ArrowPathIcon className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -124,7 +130,7 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="relative w-full h-[480px] sm:h-[560px] rounded-2xl overflow-hidden border border-gray-800 checkerboard-bg select-none cursor-grab active:cursor-grabbing flex items-center justify-center"
+        className="relative w-full h-[480px] sm:h-[560px] rounded-3xl overflow-hidden border border-neutral-800 checkerboard-bg select-none cursor-grab active:cursor-grabbing flex items-center justify-center"
       >
         <div
           className={`relative flex items-center justify-center overflow-hidden transition-all duration-150 ${getAspectRatioStyle()}`}
@@ -142,7 +148,7 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
 
           {/* Optional Aspect Ratio Crop Grid Guides */}
           {options.aspectRatio !== "free" && (
-            <div className="absolute inset-0 border-2 border-dashed border-purple-500/60 pointer-events-none flex flex-col justify-between p-2">
+            <div className="absolute inset-0 border-2 border-dashed border-[#ff47ff]/60 pointer-events-none flex flex-col justify-between p-2">
               <div className="w-full h-full border border-white/20 grid grid-cols-3 grid-rows-3">
                 <div className="border-r border-b border-white/10" />
                 <div className="border-r border-b border-white/10" />
@@ -160,7 +166,7 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
 
         {/* Hold Indicator Overlay Pill */}
         {showOriginal && (
-          <div className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-lg bg-amber-500 text-gray-950 font-extrabold text-xs shadow-xl animate-pulse">
+          <div className="absolute top-4 left-4 z-20 px-3.5 py-1.5 rounded-full bg-[#ffc13c] text-black font-extrabold text-xs shadow-xl animate-pulse">
             SHOWING ORIGINAL UNEDITED PHOTO
           </div>
         )}
@@ -168,3 +174,4 @@ export const LightroomCanvas: React.FC<LightroomCanvasProps> = ({
     </div>
   );
 };
+

@@ -1,99 +1,472 @@
 @import "tailwindcss";
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   :root {
-    --background: #070510;
-    --foreground: #f3f4f6;
-    --card: #120e24;
+    --background: #121212;
+    --foreground: #ffffff;
+    --card: #1c1c1c;
     --card-border: rgba(255, 255, 255, 0.08);
+    --color-primary: #ff47ff;
+    --color-secondary: #ffc13c;
+    --color-border: #2a2a2a;
   }
 
   body {
-    background-color: #070510;
-    color: #f3f4f6;
-    font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    font-family: var(--font-mulish), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+  }
+
+  /* Only transition specific properties — never "all" */
+  button, a {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  }
+  input, select {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 }
 
-/* Midnight Starry Dots Pattern */
+/* Picsart Subtle Dark Dots Pattern */
 .starry-bg {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 0);
-  background-size: 32px 32px;
-  background-position: -19px -19px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 0);
+  background-size: 28px 28px;
+  background-position: -14px -14px;
 }
 
 /* Transparent Checkerboard Pattern for Canvas/Image Preview */
 .checkerboard-bg {
-  background-color: #0e0a1f;
+  background-color: #161616;
   background-image: 
-    linear-gradient(45deg, #181230 25%, transparent 25%), 
-    linear-gradient(-45deg, #181230 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, #181230 75%), 
-    linear-gradient(-45deg, transparent 75%, #181230 75%);
+    linear-gradient(45deg, #222222 25%, transparent 25%), 
+    linear-gradient(-45deg, #222222 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #222222 75%), 
+    linear-gradient(-45deg, transparent 75%, #222222 75%);
   background-size: 20px 20px;
   background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
-/* Sleek Dark Fintech Glassmorphism utilities */
+/* Sleek Dark Picsart Glassmorphism utilities */
 .glass-panel {
-  background: rgba(12, 9, 26, 0.82);
+  background: rgba(28, 28, 28, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  transform: translateZ(0); /* GPU layer promotion */
 }
 
 .glass-card-fintech {
-  background: rgba(18, 14, 38, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  background: #1c1c1c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+  transform: translateZ(0); /* Force GPU compositing */
+  backface-visibility: hidden;
 }
 
 .glass-card-fintech:hover {
-  border-color: rgba(168, 85, 247, 0.35);
-  box-shadow: 0 25px 60px rgba(120, 50, 220, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 71, 255, 0.4);
+  box-shadow: 0 16px 48px rgba(255, 71, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px) translateZ(0);
 }
 
 .glass-input {
-  background: rgba(15, 11, 31, 0.7);
+  background: #121212;
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #ffffff;
+  transition: border-color 0.2s ease;
 }
 .glass-input:focus {
-  border-color: #a855f7;
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.35);
+  border-color: #ff47ff;
+  box-shadow: 0 0 16px rgba(255, 71, 255, 0.35);
 }
 
-/* Custom Scrollbars */
+/* Custom Scrollbars in Picsart Pink */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(12, 9, 26, 0.8);
+  background: #121212;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.3);
+  background: rgba(255, 71, 255, 0.4);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.6);
+  background: #ff47ff;
 }
 
-/* Ambient Pulse Glows */
-@keyframes pulse-glow {
+/* ─── GPU-Optimized Keyframe Animations ─── */
+/* RULE: Only animate transform & opacity for 60fps */
+
+/* ─── GPU-Optimized Butter-Smooth Keyframe Animations ─── */
+/* Ultra-smooth cubic-bezier(0.22, 1, 0.36, 1) for natural deceleration */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale3d(0.97, 0.97, 1);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+/* Tab Panel Fade — clean, lightweight single-layer transition */
+@keyframes tabFade {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Pulse glow — uses opacity on pseudo-element instead of box-shadow */
+@keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+    opacity: 0.35;
   }
   50% {
-    box-shadow: 0 0 35px rgba(236, 72, 153, 0.5);
+    opacity: 0.75;
   }
+}
+
+/* Calm, gentle floating animation */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+/* Page enter — subtle, smooth route transition */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Laser scan beam sweep — GPU composited alternate glide */
+@keyframes scanBeamSweep {
+  0% {
+    transform: translate3d(-10%, 0, 0);
+  }
+  100% {
+    transform: translate3d(110%, 0, 0);
+  }
+}
+
+/* Pixel grid ripple wave A & B — dual alternating keyframes for re-triggering without unmount */
+@keyframes pixelWaveA {
+  0% {
+    transform: scale3d(1, 1, 1);
+    opacity: 0.65;
+    filter: brightness(1);
+  }
+  35% {
+    transform: scale3d(1.2, 1.2, 1);
+    opacity: 1;
+    filter: brightness(1.35);
+  }
+  70% {
+    transform: scale3d(0.96, 0.96, 1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+    opacity: 0.65;
+    filter: brightness(1);
+  }
+}
+
+@keyframes pixelWaveB {
+  0% {
+    transform: scale3d(1, 1, 1);
+    opacity: 0.65;
+    filter: brightness(1);
+  }
+  35% {
+    transform: scale3d(1.2, 1.2, 1);
+    opacity: 1;
+    filter: brightness(1.35);
+  }
+  70% {
+    transform: scale3d(0.96, 0.96, 1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+    opacity: 0.65;
+    filter: brightness(1);
+  }
+}
+
+/* Dropdown menu entrance */
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: scale3d(0.95, 0.95, 1) translate3d(0, -4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1) translate3d(0, 0, 0);
+  }
+}
+
+/* Progress bar fill — uses scaleX instead of width */
+@keyframes fillBar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Scale-in for interactive elements and modals */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale3d(0.95, 0.95, 1);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+/* Glow pulse — uses opacity on a pseudo-element layer */
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+/* ─── Animation Utility Classes ─── */
+
+.animate-fade-in {
+  animation: fadeIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.animate-tab-fade {
+  animation: tabFade 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.animate-zoom-in {
+  animation: zoomIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 2.5s infinite ease-in-out;
+  position: relative;
+}
+.animate-pulse-glow::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 71, 255, 0.25), rgba(255, 193, 60, 0.25));
+  z-index: -1;
+  animation: pulseGlow 3s ease-in-out infinite;
+  will-change: opacity;
+  pointer-events: none;
+  filter: blur(12px);
 }
 
+.animate-float {
+  animation: floatGentle 4s ease-in-out infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.animate-page-enter {
+  animation: pageEnter 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.animate-scan-sweep {
+  animation: scanBeamSweep 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.animate-pixel-wave-a {
+  animation: pixelWaveA 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+}
+
+.animate-pixel-wave-b {
+  animation: pixelWaveB 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+}
+
+.animate-dropdown-in {
+  animation: dropdownIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.animate-fill-bar {
+  animation: fillBar 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.animate-glow-pulse {
+  position: relative;
+}
+.animate-glow-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: rgba(255, 71, 255, 0.25);
+  z-index: -1;
+  animation: glowPulse 2.5s ease-in-out infinite;
+  will-change: opacity;
+  pointer-events: none;
+  filter: blur(8px);
+}
+
+/* Stagger delay utility classes — combined with animation-fill-mode: both for zero flicker */
+.stagger-1 { animation-delay: 60ms; }
+.stagger-2 { animation-delay: 120ms; }
+.stagger-3 { animation-delay: 180ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 300ms; }
+.stagger-6 { animation-delay: 360ms; }
+
+/* Smooth Slider Track & Thumb */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  transition: transform 0.15s ease;
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+/* Shimmer highlight sweep on cards & skeletons */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-200%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.animate-shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+  animation: shimmer 3s ease-in-out infinite;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* ─── 60 FPS Ultra-Smooth Loading Skeleton Utility ─── */
+@keyframes skeletonShimmer {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+.skeleton-box {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 0.75rem;
+}
+.skeleton-box::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  animation: skeletonShimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+  pointer-events: none;
+}

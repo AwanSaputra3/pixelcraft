@@ -1,9 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Sparkles, ShieldCheck, Image as ImageIcon, RotateCcw, Download, ArrowUpRight, Sliders, Wand2 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Logo } from "./Logo";
+import {
+  ShieldCheckIcon,
+  PhotoIcon,
+  ArrowPathIcon,
+  ArrowDownTrayIcon,
+  ArrowTopRightOnSquareIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/outline";
 
 interface HeaderProps {
   onSelectSample: (sampleUrl: string, sampleName: string) => void;
@@ -18,17 +26,17 @@ export const SAMPLE_IMAGES = [
   {
     name: "Portrait",
     url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80",
-    desc: "Great for Remove BG & Enhance",
+    desc: "Remove BG & AI Enhance",
   },
   {
     name: "Cyberpunk City",
     url: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1000&q=80",
-    desc: "Great for Pixel Art & Compress",
+    desc: "Pixel Art & Compression",
   },
   {
     name: "Low-Light Night",
     url: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1000&q=80",
-    desc: "Great for Denoising & Saturation",
+    desc: "Denoise & Color Grading",
   },
 ];
 
@@ -39,110 +47,257 @@ export const Header: React.FC<HeaderProps> = ({
   hasImage,
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const isHome = pathname === "/";
+  const [isSampleMenuOpen, setIsSampleMenuOpen] = useState(false);
+  const sampleMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sampleMenuRef.current && !sampleMenuRef.current.contains(event.target as Node)) {
+        setIsSampleMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const [activeSection, setActiveSection] = useState<"home" | "features">(() => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("activeNavSection");
+      if (stored === "features" || window.location.hash === "#features") {
+        return "features";
+      }
+    }
+    return "home";
+  });
+
+  // Track active section on Home page (hash & scroll spy)
+  useEffect(() => {
+    if (!isHome) return;
+
+    const stored = sessionStorage.getItem("activeNavSection");
+    if (stored === "features" || window.location.hash === "#features") {
+      setActiveSection("features");
+      sessionStorage.removeItem("activeNavSection");
+      const scrollToFeatures = () => {
+        const featEl = document.getElementById("features");
+        if (featEl) {
+          featEl.scrollIntoView({ behavior: "smooth" });
+        }
+      };
+      scrollToFeatures();
+      setTimeout(scrollToFeatures, 120);
+      setTimeout(scrollToFeatures, 350);
+    }
+
+    const checkHash = () => {
+      if (typeof window !== "undefined") {
+        if (window.location.hash === "#features") {
+          setActiveSection("features");
+        } else if (window.scrollY < 200) {
+          setActiveSection("home");
+        }
+      }
+    };
+
+    const featEl = document.getElementById("features");
+    let observer: IntersectionObserver | null = null;
+
+    if (featEl) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection("features");
+            } else if (entry.boundingClientRect.top > 200) {
+              setActiveSection("home");
+            }
+          });
+        },
+        {
+          rootMargin: "-100px 0px -40% 0px",
+          threshold: 0.1,
+        }
+      );
+      observer.observe(featEl);
+    }
+
+    const handleScroll = () => {
+      if (window.scrollY < 180 && window.location.hash !== "#features") {
+        setActiveSection("home");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("hashchange", checkHash);
+
+    return () => {
+      if (observer && featEl) observer.unobserve(featEl);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("hashchange", checkHash);
+    };
+  }, [isHome]);
+
+  const navItems = [
+    { id: "home", href: "/", label: "Home" },
+    { id: "features", href: "/#features", label: "Features" },
+    { id: "studio", href: "/studio", label: "Toolkit Studio" },
+    { id: "editor", href: "/editor", label: "Pro Color Editor" },
+  ];
+
+  const handleNavClick = (id: string, href: string, e: React.MouseEvent) => {
+    if (id === "features") {
+      e.preventDefault();
+      sessionStorage.setItem("activeNavSection", "features");
+      setActiveSection("features");
+      if (isHome) {
+        window.history.pushState(null, "", "#features");
+        const featEl = document.getElementById("features");
+        if (featEl) {
+          featEl.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        router.push("/#features");
+      }
+    } else if (id === "home") {
+      sessionStorage.removeItem("activeNavSection");
+      if (isHome) {
+        e.preventDefault();
+        setActiveSection("home");
+        window.history.pushState(null, "", "/");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        router.push("/");
+      }
+    } else {
+      sessionStorage.removeItem("activeNavSection");
+    }
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#070510]/80 backdrop-blur-xl border-b border-white/5 transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-6">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-purple-400 p-[1.5px] shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
-            <div className="w-full h-full bg-[#070510] rounded-[9px] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-purple-300" />
-            </div>
-          </div>
-          <span className="text-xl font-extrabold text-white tracking-tight">
-            PixelCraft <span className="font-light text-purple-400">Studio</span>
-          </span>
-        </Link>
+    <header className="sticky top-0 z-50 w-full bg-[#121212]/95 backdrop-blur-xl border-b border-white/[0.08] transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+        {/* Left: Logo */}
+        <div className="flex items-center gap-3 shrink-0">
+          <Link href="/" className="inline-block">
+            <Logo size={32} />
+          </Link>
+        </div>
 
-        {/* Clean Menu Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
-          <Link
-            href="/"
-            className={`transition-colors hover:text-white ${
-              pathname === "/" ? "text-white font-semibold" : "text-gray-400"
-            }`}
-          >
-            Home
-          </Link>
-          <Link
-            href="/studio"
-            className={`transition-colors hover:text-white ${
-              pathname === "/studio" ? "text-purple-300 font-semibold" : "text-gray-400"
-            }`}
-          >
-            Toolkit Studio
-          </Link>
-          <Link
-            href="/editor"
-            className={`transition-colors hover:text-white ${
-              pathname === "/editor" ? "text-purple-300 font-semibold" : "text-gray-400"
-            }`}
-          >
-            Pro Color Editor
-          </Link>
-          <span className="text-gray-500 hover:text-gray-300 cursor-pointer transition-colors">
-            Features
-          </span>
-          <span className="text-gray-500 hover:text-gray-300 cursor-pointer transition-colors flex items-center gap-1">
-            Privacy <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          </span>
+        {/* Center: Navigation with CSS pill indicator */}
+        <nav className="flex items-center bg-[#1c1c1c] p-1 rounded-full border border-white/[0.08] text-xs font-medium shrink-0 shadow-inner relative">
+          {navItems.map((item) => {
+            let isItemActive = false;
+            if (item.id === "home") {
+              isItemActive = isHome && activeSection === "home";
+            } else if (item.id === "features") {
+              isItemActive = isHome && activeSection === "features";
+            } else {
+              isItemActive = pathname === item.href;
+            }
+
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                onClick={(e) => handleNavClick(item.id, item.href, e)}
+                className={`relative px-4 py-1.5 rounded-full transition-all duration-200 ease-out whitespace-nowrap z-10 cursor-pointer ${
+                  isItemActive
+                    ? "text-black font-semibold bg-[#ff47ff] shadow-md shadow-[#ff47ff]/30"
+                    : "text-neutral-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+
+          {isHome && (
+            <span className="hidden xl:flex px-3 py-1.5 rounded-full text-neutral-400 items-center gap-1 text-[11px] whitespace-nowrap border-l border-white/[0.08] ml-1 pl-3">
+              <ShieldCheckIcon className="w-3.5 h-3.5 text-[#64ed68]" /> Client-Side Privacy
+            </span>
+          )}
         </nav>
 
-        {/* Action Button & Tool Control Shortcuts */}
-        <div className="flex items-center gap-3">
-          {/* Quick Sample Selector (Visible on Studio & Editor pages) */}
-          {pathname !== "/" && (
-            <div className="hidden lg:flex items-center gap-2 mr-2">
-              <span className="text-xs text-gray-400 flex items-center gap-1">
-                <ImageIcon className="w-3.5 h-3.5 text-purple-400" /> Sample:
-              </span>
-              <div className="flex items-center gap-1.5">
-                {SAMPLE_IMAGES.map((sample) => (
-                  <button
-                    key={sample.name}
-                    onClick={() => onSelectSample(sample.url, sample.name)}
-                    className="px-2.5 py-1 text-xs rounded-full bg-white/5 hover:bg-purple-600/30 border border-white/10 text-gray-300 hover:text-white transition-all duration-150"
-                    title={sample.desc}
-                  >
-                    {sample.name}
-                  </button>
-                ))}
-              </div>
+        {/* Right: Workspace Actions */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          {/* Samples Dropdown */}
+          {!isHome && (
+            <div className="relative shrink-0" ref={sampleMenuRef}>
+              <button
+                onClick={() => setIsSampleMenuOpen(!isSampleMenuOpen)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-neutral-300 hover:text-white bg-[#1c1c1c] hover:bg-[#252525] rounded-full border border-white/[0.08] hover:border-[#ff47ff]/30 transition-all active:scale-95 whitespace-nowrap cursor-pointer"
+                title="Load a demo photo"
+              >
+                <PhotoIcon className="w-3.5 h-3.5 text-[#ff47ff]" />
+                <span>Samples</span>
+                <ChevronDownIcon
+                  className={`w-3 h-3 text-neutral-400 transition-transform duration-250 ${isSampleMenuOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {isSampleMenuOpen && (
+                <div className="absolute right-0 mt-2 w-52 py-1.5 bg-[#1c1c1c] border border-white/10 rounded-2xl shadow-2xl z-50 backdrop-blur-xl animate-dropdown-in">
+                  <div className="px-3 py-1 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider border-b border-white/5 mb-1">
+                    Try Demo Images
+                  </div>
+                  {SAMPLE_IMAGES.map((sample) => (
+                    <button
+                      key={sample.name}
+                      onClick={() => {
+                        onSelectSample(sample.url, sample.name);
+                        setIsSampleMenuOpen(false);
+                      }}
+                      className="w-full px-3 py-2 text-left hover:bg-[#ff47ff]/10 flex flex-col transition-colors group cursor-pointer hover:translate-x-0.5"
+                    >
+                      <span className="text-xs font-medium text-neutral-200 group-hover:text-[#ff47ff] transition-colors">
+                        {sample.name}
+                      </span>
+                      <span className="text-[10px] text-neutral-400">
+                        {sample.desc}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          {hasImage && pathname !== "/" && (
+          {/* Reset Action */}
+          {hasImage && !isHome && (
             <button
               onClick={onReset}
-              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-full border border-white/10 transition-colors"
-              title="Reset all filter parameters"
+              className="group flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-neutral-300 hover:text-white bg-[#1c1c1c] hover:bg-[#252525] rounded-full border border-white/[0.08] hover:border-white/20 transition-all active:scale-95 whitespace-nowrap shrink-0 cursor-pointer"
+              title="Reset all adjustments"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-gray-400" />
-              Reset
+              <ArrowPathIcon className="w-3.5 h-3.5 text-neutral-400 group-hover:rotate-180 transition-transform duration-500 ease-out" />
+              <span>Reset</span>
             </button>
           )}
 
-          {pathname !== "/" ? (
+          {/* Export / Launch Studio */}
+          {!isHome ? (
             <button
               onClick={onExport}
               disabled={!hasImage}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold shadow-xl transition-all duration-200 ${
+              className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 shrink-0 active:scale-95 ${
                 hasImage
-                  ? "bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600 hover:from-purple-400 hover:to-indigo-400 text-white shadow-purple-500/25 hover:scale-[1.03] active:scale-[0.98]"
-                  : "bg-gray-900 text-gray-600 cursor-not-allowed border border-white/5"
+                  ? "bg-[#ff47ff] hover:bg-[#e035e0] text-black shadow-lg shadow-[#ff47ff]/25 hover:shadow-[#ff47ff]/45 hover:scale-[1.03] hover:-translate-y-px cursor-pointer"
+                  : "bg-[#1c1c1c] text-neutral-500 border border-white/[0.08] cursor-not-allowed opacity-60"
               }`}
             >
-              <Download className="w-4 h-4" />
-              Export Photo
+              <ArrowDownTrayIcon className="w-4 h-4" />
+              <span>Export Photo</span>
             </button>
           ) : (
             <Link
               href="/studio"
-              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-500 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-xl shadow-purple-500/20 hover:shadow-purple-500/40 hover:scale-105 active:scale-95 transition-all duration-200"
+              className="group flex items-center gap-2 px-5 py-2 rounded-full bg-[#ff47ff] hover:bg-[#e035e0] text-black font-semibold text-xs shadow-lg shadow-[#ff47ff]/25 hover:shadow-[#ff47ff]/45 transition-all whitespace-nowrap shrink-0 cursor-pointer hover:scale-[1.04] hover:-translate-y-px active:scale-95"
             >
               <span>Launch Studio</span>
-              <ArrowUpRight className="w-4 h-4" />
+              <ArrowTopRightOnSquareIcon className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
           )}
         </div>

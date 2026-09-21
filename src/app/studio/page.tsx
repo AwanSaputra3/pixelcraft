@@ -6,6 +6,7 @@ import { Dropzone } from "../../components/Dropzone";
 import { ImageCompare } from "../../components/ImageCompare";
 import { ControlBar, ToolTab } from "../../components/ControlBar";
 import { ExportModal } from "../../components/ExportModal";
+import { StudioSkeleton } from "../../components/StudioSkeleton";
 
 import {
   EnhanceOptions,
@@ -172,19 +173,60 @@ export default function StudioDashboardPage() {
     img.src = url;
   }, []);
 
-  // Sample Image Selector Handler
+  // Sample Image Selector Handler with robust fallback
   const handleSelectSample = async (sampleUrl: string, sampleName: string) => {
     setIsProcessing(true);
     setProgressText(`Fetching ${sampleName} sample...`);
     try {
       const response = await fetch(sampleUrl);
+      if (!response.ok) throw new Error("HTTP error " + response.status);
       const blob = await response.blob();
       const file = new File([blob], `${sampleName.toLowerCase().replace(/\s+/g, "_")}.jpg`, {
         type: blob.type || "image/jpeg",
       });
       loadImageFile(file);
     } catch (err) {
-      console.error("Failed to fetch sample image:", err);
+      console.warn("Fetch sample failed, falling back to direct Image loader:", err);
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const file = new File([blob], `${sampleName.toLowerCase().replace(/\s+/g, "_")}.jpg`, {
+                type: "image/jpeg",
+              });
+              loadImageFile(file);
+            }
+          }, "image/jpeg");
+        }
+      };
+      img.onerror = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1200;
+        canvas.height = 800;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          const grad = ctx.createLinearGradient(0, 0, 1200, 800);
+          grad.addColorStop(0, "#1f1c2c");
+          grad.addColorStop(0.5, "#928dab");
+          grad.addColorStop(1, "#ff47ff");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, 1200, 800);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const file = new File([blob], "demo_portrait.jpg", { type: "image/jpeg" });
+              loadImageFile(file);
+            }
+          }, "image/jpeg");
+        }
+      };
+      img.src = sampleUrl;
     } finally {
       setIsProcessing(false);
     }
@@ -393,7 +435,7 @@ export default function StudioDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#070510] starry-bg text-gray-100 selection:bg-purple-500 selection:text-white pb-12">
+    <div className="min-h-screen flex flex-col bg-[#121212] starry-bg text-white selection:bg-[#ff47ff] selection:text-black pb-12">
       {/* Navbar Header */}
       <Header
         onSelectSample={handleSelectSample}
@@ -455,6 +497,9 @@ export default function StudioDashboardPage() {
             </div>
           </div>
         )}
+
+        {/* 60 FPS Loading Skeleton Placeholder while image is loading or empty */}
+        {!originalUrl && <StudioSkeleton type="studio" />}
       </main>
 
       {/* Export & Download Modal */}

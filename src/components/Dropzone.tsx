@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { UploadCloud, Image as ImageIcon, FileText, CheckCircle2, Trash2, ArrowUpRight } from "lucide-react";
+import {
+  CloudArrowUpIcon,
+  PhotoIcon,
+  DocumentTextIcon,
+  CheckCircleIcon,
+  TrashIcon,
+  ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline";
 import { SAMPLE_IMAGES } from "./Header";
 
 interface DropzoneProps {
@@ -79,8 +86,8 @@ export const Dropzone: React.FC<DropzoneProps> = ({
           onClick={() => fileInputRef.current?.click()}
           className={`relative cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[280px] ${
             isDragOver
-              ? "border-purple-500 bg-purple-500/10 scale-[1.01] shadow-xl shadow-purple-500/20"
-              : "border-gray-700/80 bg-gray-900/40 hover:border-purple-500/50 hover:bg-gray-800/50"
+              ? "border-[#ff47ff] bg-[#ff47ff]/10 scale-[1.01] shadow-xl shadow-[#ff47ff]/20"
+              : "border-neutral-800 bg-[#1c1c1c] hover:border-[#ff47ff]/50 hover:bg-[#222222]"
           }`}
         >
           <input
@@ -92,37 +99,37 @@ export const Dropzone: React.FC<DropzoneProps> = ({
             className="hidden"
           />
 
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600/30 to-pink-600/30 border border-purple-500/30 flex items-center justify-center mb-4 text-purple-400 group-hover:scale-110 transition-transform">
-            <UploadCloud className="w-8 h-8 text-purple-300 animate-bounce-subtle" />
+          <div className="w-16 h-16 rounded-2xl bg-[#ff47ff]/15 border border-[#ff47ff]/30 flex items-center justify-center mb-4 text-[#ff47ff] group-hover:scale-110 transition-transform shadow-lg shadow-[#ff47ff]/10">
+            <CloudArrowUpIcon className="w-8 h-8 text-[#ff47ff]" />
           </div>
 
           <h3 className="text-base font-semibold text-white mb-1">
-            Drag & drop your photo here, or <span className="text-purple-400 underline">browse</span>
+            Drag & drop your photo here, or <span className="text-[#ff47ff] underline">browse</span>
           </h3>
-          <p className="text-xs text-gray-400 max-w-sm mb-6">
+          <p className="text-xs text-neutral-400 max-w-sm mb-6">
             Supports PNG, JPG, WebP, GIF & BMP up to 50MB. Processed 100% locally in your browser.
           </p>
 
           {/* Quick sample pills */}
           <div className="flex flex-wrap items-center justify-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <span className="text-xs font-medium text-gray-400">Or try demo image:</span>
+            <span className="text-xs font-medium text-neutral-400">Or try demo image:</span>
             {SAMPLE_IMAGES.map((sample) => (
               <button
                 key={sample.name}
                 onClick={() => onSampleSelect(sample.url, sample.name)}
-                className="px-3 py-1 text-xs font-medium rounded-lg bg-gray-800/90 hover:bg-purple-600/40 text-purple-200 border border-purple-500/20 hover:border-purple-500/50 flex items-center gap-1 transition-all"
+                className="px-3 py-1 text-xs font-medium rounded-full bg-[#121212] hover:bg-[#ff47ff]/20 text-neutral-200 border border-neutral-700 hover:border-[#ff47ff]/40 flex items-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
               >
                 {sample.name}
-                <ArrowUpRight className="w-3 h-3 text-purple-400" />
+                <ArrowTopRightOnSquareIcon className="w-3 h-3 text-[#ff47ff]" />
               </button>
             ))}
           </div>
         </div>
       ) : (
         /* Image Loaded Metadata Bar */
-        <div className="glass-card rounded-xl p-3 border border-gray-800 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-300">
+        <div className="glass-card-fintech rounded-2xl p-3 border border-neutral-800 flex flex-wrap items-center justify-between gap-3 text-xs text-neutral-300">
           <div className="flex items-center gap-3">
-            <div className="px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-300 font-semibold uppercase tracking-wider text-[10px]">
+            <div className="px-2.5 py-1 rounded-full bg-[#ff47ff]/20 text-[#ff47ff] font-semibold uppercase tracking-wider text-[10px]">
               {currentImageInfo.type.split("/")[1] || "IMG"}
             </div>
             <div className="truncate max-w-[200px] font-medium text-white" title={currentImageInfo.name}>
@@ -130,20 +137,20 @@ export const Dropzone: React.FC<DropzoneProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-gray-400">
+          <div className="flex items-center gap-4 text-neutral-400">
             <div>
               Dimensions:{" "}
-              <span className="text-gray-200 font-mono">
+              <span className="text-neutral-200 font-mono">
                 {currentImageInfo.width} × {currentImageInfo.height}px
               </span>
             </div>
             <div>
-              Size: <span className="text-gray-200 font-mono">{formatBytes(currentImageInfo.size)}</span>
+              Size: <span className="text-neutral-200 font-mono">{formatBytes(currentImageInfo.size)}</span>
             </div>
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 transition-colors"
+              className="px-3 py-1 rounded-full bg-[#121212] hover:bg-neutral-800 text-neutral-200 border border-neutral-700 hover:border-[#ff47ff]/40 transition-all duration-200 hover:scale-105 active:scale-95 font-medium shadow-sm"
             >
               Change Image
             </button>
@@ -163,20 +170,20 @@ export const Dropzone: React.FC<DropzoneProps> = ({
       {/* Multi-File Queue Bar */}
       {fileQueue.length > 1 && (
         <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1">
-          <span className="text-xs text-gray-400 flex items-center gap-1 shrink-0">
-            <ImageIcon className="w-3.5 h-3.5" /> Queue ({fileQueue.length}):
+          <span className="text-xs text-neutral-400 flex items-center gap-1 shrink-0">
+            <PhotoIcon className="w-3.5 h-3.5 text-[#ff47ff]" /> Queue ({fileQueue.length}):
           </span>
           {fileQueue.map((item) => (
             <div
               key={item.id}
               onClick={() => onSelectQueueFile(item.id)}
-              className={`group relative flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs cursor-pointer shrink-0 transition-all ${
+              className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs cursor-pointer shrink-0 transition-all ${
                 activeFileId === item.id
-                  ? "bg-purple-900/40 border-purple-500 text-white shadow-md shadow-purple-500/10"
-                  : "bg-gray-900/60 border-gray-800 text-gray-400 hover:border-gray-700 hover:text-gray-200"
+                  ? "bg-[#ff47ff]/15 border-[#ff47ff] text-white shadow-md shadow-[#ff47ff]/15"
+                  : "bg-[#1c1c1c] border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white"
               }`}
             >
-              <img src={item.thumbnail} alt={item.name} className="w-5 h-5 rounded object-cover" />
+              <img src={item.thumbnail} alt={item.name} className="w-5 h-5 rounded-full object-cover" />
               <span className="truncate max-w-[90px]">{item.name}</span>
               <button
                 onClick={(e) => {
@@ -186,7 +193,7 @@ export const Dropzone: React.FC<DropzoneProps> = ({
                 className="opacity-0 group-hover:opacity-100 hover:text-red-400 transition-opacity p-0.5"
                 title="Remove from queue"
               >
-                <Trash2 className="w-3 h-3" />
+                <TrashIcon className="w-3 h-3" />
               </button>
             </div>
           ))}
@@ -195,3 +202,4 @@ export const Dropzone: React.FC<DropzoneProps> = ({
     </div>
   );
 };
+

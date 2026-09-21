@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { HslColorName, HslChannel, LightroomOptions } from "../../lib/lightroomEngine";
+import { HslColorName, HslChannel } from "../../lib/lightroomEngine";
 
 interface HslMixerProps {
   hslOptions: Record<HslColorName, HslChannel>;
@@ -37,13 +37,13 @@ export const HslMixer: React.FC<HslMixerProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-4 bg-gray-950/70 p-3.5 rounded-2xl border border-gray-800">
+    <div className="flex flex-col gap-4 bg-[#1c1c1c] p-4 rounded-2xl border border-white/10">
       {/* Header & Target Color Channel Circles */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-gray-200">HSL Target Color Mixer</span>
+        <span className="text-xs font-bold text-white tracking-wide">HSL Target Color Mixer</span>
         <button
           onClick={onResetHsl}
-          className="text-[10px] text-gray-400 hover:text-white transition-colors"
+          className="text-[11px] text-gray-400 hover:text-[#ff47ff] transition-colors"
         >
           Reset All Colors
         </button>
@@ -62,8 +62,8 @@ export const HslMixer: React.FC<HslMixerProps> = ({
               onClick={() => setActiveColor(c.id)}
               className={`relative flex flex-col items-center gap-1 p-1.5 rounded-xl transition-all ${
                 isSelected
-                  ? "bg-gray-800 border-2 border-purple-500 scale-110 shadow-lg"
-                  : "hover:bg-gray-900 border border-transparent"
+                  ? "bg-[#2a2a2a] border-2 border-[#ff47ff] scale-110 shadow-lg shadow-[#ff47ff]/20"
+                  : "hover:bg-[#252525] border border-transparent"
               }`}
             >
               <div
@@ -90,7 +90,7 @@ export const HslMixer: React.FC<HslMixerProps> = ({
             />
             {activeColor} Hue Shift
           </span>
-          <span className="font-mono text-purple-400 font-bold">{currentChannel.hue}</span>
+          <span className="font-mono text-[#ff47ff] font-bold">{currentChannel.hue}</span>
         </div>
         <input
           type="range"
@@ -98,12 +98,12 @@ export const HslMixer: React.FC<HslMixerProps> = ({
           max="100"
           value={currentChannel.hue}
           onChange={(e) => handleSliderChange("hue", parseInt(e.target.value))}
-          className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+          className="w-full accent-[#ff47ff] h-1.5 bg-[#2a2a2a] rounded-lg cursor-pointer"
         />
 
         <div className="flex items-center justify-between text-xs text-gray-300">
           <span className="capitalize font-medium">{activeColor} Saturation</span>
-          <span className="font-mono text-purple-400 font-bold">{currentChannel.saturation}</span>
+          <span className="font-mono text-[#ff47ff] font-bold">{currentChannel.saturation}</span>
         </div>
         <input
           type="range"
@@ -111,12 +111,12 @@ export const HslMixer: React.FC<HslMixerProps> = ({
           max="100"
           value={currentChannel.saturation}
           onChange={(e) => handleSliderChange("saturation", parseInt(e.target.value))}
-          className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+          className="w-full accent-[#ff47ff] h-1.5 bg-[#2a2a2a] rounded-lg cursor-pointer"
         />
 
         <div className="flex items-center justify-between text-xs text-gray-300">
           <span className="capitalize font-medium">{activeColor} Luminance</span>
-          <span className="font-mono text-purple-400 font-bold">{currentChannel.luminance}</span>
+          <span className="font-mono text-[#ff47ff] font-bold">{currentChannel.luminance}</span>
         </div>
         <input
           type="range"
@@ -124,7 +124,7 @@ export const HslMixer: React.FC<HslMixerProps> = ({
           max="100"
           value={currentChannel.luminance}
           onChange={(e) => handleSliderChange("luminance", parseInt(e.target.value))}
-          className="w-full accent-purple-500 h-1.5 bg-gray-800 rounded-lg cursor-pointer"
+          className="w-full accent-[#ff47ff] h-1.5 bg-[#2a2a2a] rounded-lg cursor-pointer"
         />
       </div>
     </div>

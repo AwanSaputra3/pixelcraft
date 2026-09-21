@@ -1,0 +1,190 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "PixelCraft Studio" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e18]:
+            - generic [ref=e19]: PixelCraft
+            - generic [ref=e20]: Studio
+        - navigation [ref=e21]:
+          - link "Home" [ref=e22] [cursor=pointer]:
+            - /url: /
+          - link "Toolkit Studio" [ref=e24] [cursor=pointer]:
+            - /url: /studio
+          - link "Pro Color Editor" [ref=e25] [cursor=pointer]:
+            - /url: /editor
+          - link "Features" [ref=e26] [cursor=pointer]:
+            - /url: "#features"
+          - generic [ref=e27]: Client-Side Privacy
+        - link "Launch Studio" [ref=e32] [cursor=pointer]:
+          - /url: /studio
+    - main [ref=e36]:
+      - generic [ref=e37]:
+        - heading "Elevate Your Editing Experience" [level=1] [ref=e38]
+        - paragraph [ref=e39]: Make photos clearer and sharper in just a click with AI-powered technology in a 100% client-side privacy-first environment.
+        - link "Launch Studio & Enhance" [ref=e41] [cursor=pointer]:
+          - /url: /studio
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - img "3D Fluid Wave Ribbon"
+          - generic [ref=e48]:
+            - generic [ref=e49]: Client Security
+            - heading "Unparalleled Privacy Protection" [level=4] [ref=e54]
+            - generic [ref=e55]:
+              - generic [ref=e56]: 100% Local GPU/WASM
+              - generic [ref=e57]: 100%
+          - generic [ref=e58]:
+            - generic [ref=e59]: WASM AI Neural Net
+            - generic [ref=e64]: 99.8%
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - generic [ref=e69]:
+              - generic [ref=e71]: Anime.js v4 Stagger Matrix
+              - generic [ref=e74]: Interactive
+            - generic [ref=e75]:
+              - button "Radial Ripple" [ref=e76]
+              - button "Corner Sweep" [ref=e77]
+              - button "Trigger Random Burst" [ref=e78]
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - 'generic "Click pixel #1 to ripple wave" [ref=e83] [cursor=pointer]'
+              - 'generic "Click pixel #2 to ripple wave" [ref=e84] [cursor=pointer]'
+              - 'generic "Click pixel #3 to ripple wave" [ref=e85] [cursor=pointer]'
+              - 'generic "Click pixel #4 to ripple wave" [ref=e86] [cursor=pointer]'
+              - 'generic "Click pixel #5 to ripple wave" [ref=e87] [cursor=pointer]'
+              - 'generic "Click pixel #6 to ripple wave" [ref=e88] [cursor=pointer]'
+              - 'generic "Click pixel #7 to ripple wave" [ref=e89] [cursor=pointer]'
+              - 'generic "Click pixel #8 to ripple wave" [ref=e90] [cursor=pointer]'
+              - 'generic "Click pixel #9 to ripple wave" [ref=e91] [cursor=pointer]'
+              - 'generic "Click pixel #10 to ripple wave" [ref=e92] [cursor=pointer]'
+              - 'generic "Click pixel #11 to ripple wave" [ref=e93] [cursor=pointer]'
+              - 'generic "Click pixel #12 to ripple wave" [ref=e94] [cursor=pointer]'
+              - 'generic "Click pixel #13 to ripple wave" [ref=e95] [cursor=pointer]'
+              - 'generic "Click pixel #14 to ripple wave" [ref=e96] [cursor=pointer]'
+              - 'generic "Click pixel #15 to ripple wave" [ref=e97] [cursor=pointer]'
+              - 'generic "Click pixel #16 to ripple wave" [ref=e98] [cursor=pointer]'
+            - generic [ref=e99]:
+              - 'generic "Click pixel #17 to ripple wave" [ref=e100] [cursor=pointer]'
+              - 'generic "Click pixel #18 to ripple wave" [ref=e101] [cursor=pointer]'
+              - 'generic "Click pixel #19 to ripple wave" [ref=e102] [cursor=pointer]'
+              - 'generic "Click pixel #20 to ripple wave" [ref=e103] [cursor=pointer]'
+              - 'generic "Click pixel #21 to ripple wave" [ref=e104] [cursor=pointer]'
+              - 'generic "Click pixel #22 to ripple wave" [ref=e105] [cursor=pointer]'
+              - 'generic "Click pixel #23 to ripple wave" [ref=e106] [cursor=pointer]'
+              - 'generic "Click pixel #24 to ripple wave" [ref=e107] [cursor=pointer]'
+              - 'generic "Click pixel #25 to ripple wave" [ref=e108] [cursor=pointer]'
+              - 'generic "Click pixel #26 to ripple wave" [ref=e109] [cursor=pointer]'
+              - 'generic "Click pixel #27 to ripple wave" [ref=e110] [cursor=pointer]'
+              - 'generic "Click pixel #28 to ripple wave" [ref=e111] [cursor=pointer]'
+              - 'generic "Click pixel #29 to ripple wave" [ref=e112] [cursor=pointer]'
+              - 'generic "Click pixel #30 to ripple wave" [ref=e113] [cursor=pointer]'
+              - 'generic "Click pixel #31 to ripple wave" [ref=e114] [cursor=pointer]'
+              - 'generic "Click pixel #32 to ripple wave" [ref=e115] [cursor=pointer]'
+            - generic [ref=e116]:
+              - 'generic "Click pixel #33 to ripple wave" [ref=e117] [cursor=pointer]'
+              - 'generic "Click pixel #34 to ripple wave" [ref=e118] [cursor=pointer]'
+              - 'generic "Click pixel #35 to ripple wave" [ref=e119] [cursor=pointer]'
+              - 'generic "Click pixel #36 to ripple wave" [ref=e120] [cursor=pointer]'
+              - 'generic "Click pixel #37 to ripple wave" [ref=e121] [cursor=pointer]'
+              - 'generic "Click pixel #38 to ripple wave" [ref=e122] [cursor=pointer]'
+              - 'generic "Click pixel #39 to ripple wave" [ref=e123] [cursor=pointer]'
+              - 'generic "Click pixel #40 to ripple wave" [ref=e124] [cursor=pointer]'
+              - 'generic "Click pixel #41 to ripple wave" [ref=e125] [cursor=pointer]'
+              - 'generic "Click pixel #42 to ripple wave" [ref=e126] [cursor=pointer]'
+              - 'generic "Click pixel #43 to ripple wave" [ref=e127] [cursor=pointer]'
+              - 'generic "Click pixel #44 to ripple wave" [ref=e128] [cursor=pointer]'
+              - 'generic "Click pixel #45 to ripple wave" [ref=e129] [cursor=pointer]'
+              - 'generic "Click pixel #46 to ripple wave" [ref=e130] [cursor=pointer]'
+              - 'generic "Click pixel #47 to ripple wave" [ref=e131] [cursor=pointer]'
+              - 'generic "Click pixel #48 to ripple wave" [ref=e132] [cursor=pointer]'
+            - generic [ref=e133]:
+              - 'generic "Click pixel #49 to ripple wave" [ref=e134] [cursor=pointer]'
+              - 'generic "Click pixel #50 to ripple wave" [ref=e135] [cursor=pointer]'
+              - 'generic "Click pixel #51 to ripple wave" [ref=e136] [cursor=pointer]'
+              - 'generic "Click pixel #52 to ripple wave" [ref=e137] [cursor=pointer]'
+              - 'generic "Click pixel #53 to ripple wave" [ref=e138] [cursor=pointer]'
+              - 'generic "Click pixel #54 to ripple wave" [ref=e139] [cursor=pointer]'
+              - 'generic "Click pixel #55 to ripple wave" [ref=e140] [cursor=pointer]'
+              - 'generic "Click pixel #56 to ripple wave" [ref=e141] [cursor=pointer]'
+              - 'generic "Click pixel #57 to ripple wave" [ref=e142] [cursor=pointer]'
+              - 'generic "Click pixel #58 to ripple wave" [ref=e143] [cursor=pointer]'
+              - 'generic "Click pixel #59 to ripple wave" [ref=e144] [cursor=pointer]'
+              - 'generic "Click pixel #60 to ripple wave" [ref=e145] [cursor=pointer]'
+              - 'generic "Click pixel #61 to ripple wave" [ref=e146] [cursor=pointer]'
+              - 'generic "Click pixel #62 to ripple wave" [ref=e147] [cursor=pointer]'
+              - 'generic "Click pixel #63 to ripple wave" [ref=e148] [cursor=pointer]'
+              - 'generic "Click pixel #64 to ripple wave" [ref=e149] [cursor=pointer]'
+            - generic [ref=e150]:
+              - 'generic "Click pixel #65 to ripple wave" [ref=e151] [cursor=pointer]'
+              - 'generic "Click pixel #66 to ripple wave" [ref=e152] [cursor=pointer]'
+              - 'generic "Click pixel #67 to ripple wave" [ref=e153] [cursor=pointer]'
+              - 'generic "Click pixel #68 to ripple wave" [ref=e154] [cursor=pointer]'
+              - 'generic "Click pixel #69 to ripple wave" [ref=e155] [cursor=pointer]'
+              - 'generic "Click pixel #70 to ripple wave" [ref=e156] [cursor=pointer]'
+              - 'generic "Click pixel #71 to ripple wave" [ref=e157] [cursor=pointer]'
+              - 'generic "Click pixel #72 to ripple wave" [ref=e158] [cursor=pointer]'
+              - 'generic "Click pixel #73 to ripple wave" [ref=e159] [cursor=pointer]'
+              - 'generic "Click pixel #74 to ripple wave" [ref=e160] [cursor=pointer]'
+              - 'generic "Click pixel #75 to ripple wave" [ref=e161] [cursor=pointer]'
+              - 'generic "Click pixel #76 to ripple wave" [ref=e162] [cursor=pointer]'
+              - 'generic "Click pixel #77 to ripple wave" [ref=e163] [cursor=pointer]'
+              - 'generic "Click pixel #78 to ripple wave" [ref=e164] [cursor=pointer]'
+              - 'generic "Click pixel #79 to ripple wave" [ref=e165] [cursor=pointer]'
+              - 'generic "Click pixel #80 to ripple wave" [ref=e166] [cursor=pointer]'
+            - generic [ref=e167]:
+              - 'generic "Click pixel #81 to ripple wave" [ref=e168] [cursor=pointer]'
+              - 'generic "Click pixel #82 to ripple wave" [ref=e169] [cursor=pointer]'
+              - 'generic "Click pixel #83 to ripple wave" [ref=e170] [cursor=pointer]'
+              - 'generic "Click pixel #84 to ripple wave" [ref=e171] [cursor=pointer]'
+              - 'generic "Click pixel #85 to ripple wave" [ref=e172] [cursor=pointer]'
+              - 'generic "Click pixel #86 to ripple wave" [ref=e173] [cursor=pointer]'
+              - 'generic "Click pixel #87 to ripple wave" [ref=e174] [cursor=pointer]'
+              - 'generic "Click pixel #88 to ripple wave" [ref=e175] [cursor=pointer]'
+              - 'generic "Click pixel #89 to ripple wave" [ref=e176] [cursor=pointer]'
+              - 'generic "Click pixel #90 to ripple wave" [ref=e177] [cursor=pointer]'
+              - 'generic "Click pixel #91 to ripple wave" [ref=e178] [cursor=pointer]'
+              - 'generic "Click pixel #92 to ripple wave" [ref=e179] [cursor=pointer]'
+              - 'generic "Click pixel #93 to ripple wave" [ref=e180] [cursor=pointer]'
+              - 'generic "Click pixel #94 to ripple wave" [ref=e181] [cursor=pointer]'
+              - 'generic "Click pixel #95 to ripple wave" [ref=e182] [cursor=pointer]'
+              - 'generic "Click pixel #96 to ripple wave" [ref=e183] [cursor=pointer]'
+          - paragraph [ref=e184]: Click any pixel above to trigger a localized Anime.js v4 physics ripple wave
+        - generic [ref=e185]:
+          - link "Enhance Engine Photo Enhancement Adaptive brightness, contrast, saturation, Laplacian 3x3 sharpening kernel & live RGB histogram." [ref=e186] [cursor=pointer]:
+            - /url: /studio
+            - generic [ref=e194]:
+              - generic [ref=e195]: Enhance Engine
+              - heading "Photo Enhancement" [level=3] [ref=e196]
+              - paragraph [ref=e197]: Adaptive brightness, contrast, saturation, Laplacian 3x3 sharpening kernel & live RGB histogram.
+          - link "Compress Pipeline Image Compression Quality sliders for WebP, JPG, and PNG with real-time size savings readout." [ref=e198] [cursor=pointer]:
+            - /url: /studio
+            - generic [ref=e206]:
+              - generic [ref=e207]: Compress Pipeline
+              - heading "Image Compression" [level=3] [ref=e208]
+              - paragraph [ref=e209]: Quality sliders for WebP, JPG, and PNG with real-time size savings readout.
+          - link "Spatial Denoise Denoise ISO Grain Spatial Median & Bilateral Gaussian smooth filters to clean low-light photo noise." [ref=e210] [cursor=pointer]:
+            - /url: /studio
+            - generic [ref=e218]:
+              - generic [ref=e219]: Spatial Denoise
+              - heading "Denoise ISO Grain" [level=3] [ref=e220]
+              - paragraph [ref=e221]: Spatial Median & Bilateral Gaussian smooth filters to clean low-light photo noise.
+          - link "Retro Quantizer Photo to Pixelated Flexible block sampling with GameBoy, NES 8-Bit, Cyberpunk, and C64 color palette presets." [ref=e222] [cursor=pointer]:
+            - /url: /studio
+            - generic [ref=e230]:
+              - generic [ref=e231]: Retro Quantizer
+              - heading "Photo to Pixelated" [level=3] [ref=e232]
+              - paragraph [ref=e233]: Flexible block sampling with GameBoy, NES 8-Bit, Cyberpunk, and C64 color palette presets.
+          - link "WASM AI Model Remove Background Automatic client-side subject segmentation with solid, gradient, or custom photo backdrops." [ref=e234] [cursor=pointer]:
+            - /url: /studio
+            - generic [ref=e242]:
+              - generic [ref=e243]: WASM AI Model
+              - heading "Remove Background" [level=3] [ref=e244]
+              - paragraph [ref=e245]: Automatic client-side subject segmentation with solid, gradient, or custom photo backdrops.
+          - link "Pro Color Engine Color Grade & HSL 8-channel target HSL color channel tuning, tone curves, texture, dehaze & selective masking." [ref=e246] [cursor=pointer]:
+            - /url: /editor
+            - generic [ref=e254]:
+              - generic [ref=e255]: Pro Color Engine
+              - heading "Color Grade & HSL" [level=3] [ref=e256]
+              - paragraph [ref=e257]: 8-channel target HSL color channel tuning, tone curves, texture, dehaze & selective masking.
+  - button "Open Next.js Dev Tools" [ref=e263] [cursor=pointer]
